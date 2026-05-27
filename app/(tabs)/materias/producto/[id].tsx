@@ -57,22 +57,22 @@ export default function ProductoDetalle() {
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-12 pb-5">
         <Pressable onPress={() => router.back()} className="mb-3">
-          <ChevronLeft size={24} color="#bbf7d0" />
+          <ChevronLeft size={24} stroke="#bbf7d0" />
         </Pressable>
         <Text className="text-white text-xl font-bold leading-7">{producto.nombre}</Text>
         <View className="flex-row gap-4 mt-3">
           <View className="flex-row items-center gap-1">
-            <Package size={14} color="#bbf7d0" />
+            <Package size={14} stroke="#bbf7d0" />
             <Text className="text-verde-200 text-xs">
               {producto.rendimientoKg ? `${producto.rendimientoKg} kg` : `${producto.rendimientoL} L`}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <Clock size={14} color="#bbf7d0" />
+            <Clock size={14} stroke="#bbf7d0" />
             <Text className="text-verde-200 text-xs">{tiempoTotal} min aprox.</Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <Star size={14} color="#bbf7d0" />
+            <Star size={14} stroke="#bbf7d0" />
             <Text className="text-verde-200 text-xs capitalize">{producto.nivelDificultad}</Text>
           </View>
         </View>

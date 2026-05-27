@@ -60,7 +60,7 @@ export default function Inicio() {
                   className="flex-1 min-w-[44%] rounded-2xl p-4 active:opacity-80"
                   style={{ backgroundColor: a.bg }}
                 >
-                  <Icon size={28} color={a.color} />
+                  <Icon size={28} stroke={a.color} />
                   <Text className="text-sm font-semibold mt-3" style={{ color: a.color }}>
                     {a.label}
                   </Text>

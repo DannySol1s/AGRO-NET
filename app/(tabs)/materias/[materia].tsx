@@ -55,7 +55,7 @@ export default function MateriasProductos() {
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-12 pb-4">
         <Pressable onPress={() => router.back()} className="mb-3">
-          <ChevronLeft size={24} color="#bbf7d0" />
+          <ChevronLeft size={24} stroke="#bbf7d0" />
         </Pressable>
         <Text className="text-4xl mb-1">{emojiMateria}</Text>
         <Text className="text-white text-2xl font-bold">{nombreMateria}</Text>

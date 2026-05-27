@@ -48,7 +48,7 @@ export default function Diagnostico() {
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-12 pb-6">
         <Pressable onPress={retroceder} className="mb-4">
-          <ChevronLeft size={24} color="#bbf7d0" />
+          <ChevronLeft size={24} stroke="#bbf7d0" />
         </Pressable>
         <Text className="text-verde-200 text-sm mb-1">Paso {paso} de {PASOS_TOTAL}</Text>
         <View className="flex-row gap-2">
@@ -150,7 +150,7 @@ export default function Diagnostico() {
           <Text className="text-white text-lg font-bold mr-2">
             {paso === PASOS_TOTAL ? 'Empezar a explorar' : 'Continuar'}
           </Text>
-          <ChevronRight size={20} color="white" />
+          <ChevronRight size={20} stroke="white" />
         </Pressable>
       </View>
     </SafeAreaView>

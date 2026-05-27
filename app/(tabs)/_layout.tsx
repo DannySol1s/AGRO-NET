@@ -29,28 +29,28 @@ export default function TabLayout() {
         name="inicio"
         options={{
           title: 'Inicio',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <Home size={size} stroke={color} />,
         }}
       />
       <Tabs.Screen
         name="materias"
         options={{
           title: 'Mis Materias',
-          tabBarIcon: ({ color, size }) => <Leaf size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <Leaf size={size} stroke={color} />,
         }}
       />
       <Tabs.Screen
         name="calidad"
         options={{
           title: 'Calidad',
-          tabBarIcon: ({ color, size }) => <ShieldCheck size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <ShieldCheck size={size} stroke={color} />,
         }}
       />
       <Tabs.Screen
         name="comunidad"
         options={{
           title: 'Comunidad',
-          tabBarIcon: ({ color, size }) => <Users size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <Users size={size} stroke={color} />,
         }}
       />
     </Tabs>

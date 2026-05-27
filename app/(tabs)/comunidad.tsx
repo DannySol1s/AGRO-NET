@@ -11,7 +11,7 @@ export default function Comunidad() {
 
       <View className="flex-1 items-center justify-center px-8">
         <View className="bg-verde-100 rounded-full p-8 mb-6">
-          <Users size={56} color="#166534" />
+          <Users size={56} stroke="#166534" />
         </View>
         <Text className="text-verde-900 text-xl font-bold text-center mb-3">
           Próximamente

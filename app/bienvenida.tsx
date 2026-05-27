@@ -9,7 +9,7 @@ export default function Bienvenida() {
 
       <View className="flex-1 items-center justify-center px-8">
         <View className="bg-verde-700 rounded-full p-8 mb-6">
-          <Sprout size={72} color="#bbf7d0" />
+          <Sprout size={72} stroke="#bbf7d0" />
         </View>
 
         <Text className="text-white text-4xl font-bold text-center mb-2">

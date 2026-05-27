@@ -56,7 +56,7 @@ export default function Costos() {
       {/* Header */}
       <View className="bg-tierra-700 px-6 pt-12 pb-5">
         <Pressable onPress={() => router.back()} className="mb-3">
-          <ChevronLeft size={24} color="#fae8cc" />
+          <ChevronLeft size={24} stroke="#fae8cc" />
         </Pressable>
         <Text className="text-tierra-100 text-lg font-bold">Calculadora de Costos</Text>
         {producto && (
