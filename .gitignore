@@ -1,44 +1,53 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# dependencies
+# ── Dependencias ──────────────────────────────────────────────────────
 node_modules/
 
-# Expo
+# ── Variables de entorno (NUNCA subir claves al repo) ─────────────────
+.env
+.env.*
+# Excepción: el archivo de ejemplo SÍ va al repo (sin valores reales)
+!.env.example
+
+# ── Expo ──────────────────────────────────────────────────────────────
 .expo/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# ── Carpetas nativas generadas ────────────────────────────────────────
+/ios
+/android
 .kotlin/
+
+# ── Certificados y claves privadas ───────────────────────────────────
 *.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+*.pem
 
-# Metro
+# ── Metro / caché ────────────────────────────────────────────────────
 .metro-health-check*
 
-# debug
+# ── Logs de debug ────────────────────────────────────────────────────
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
+# ── Sistema operativo ────────────────────────────────────────────────
 .DS_Store
-*.pem
+Thumbs.db
 
-# local env files
-.env*.local
-
-# typescript
+# ── TypeScript ───────────────────────────────────────────────────────
 *.tsbuildinfo
 
-# generated native folders
-/ios
-/android
+# ── Base de datos local (no compartir datos del dispositivo) ─────────
+*.sqlite
+*.sqlite3
+*.db
 
-# Claude Code internal state
+# ── Claude Code (estado interno, no es código del proyecto) ──────────
 .claude/
