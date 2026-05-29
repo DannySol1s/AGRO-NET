@@ -9,6 +9,12 @@ const ORDEN_DIFICULTAD: Record<NivelExperiencia, number> = {
   avanzado: 2,
 };
 
+const NIVELES_VALIDOS = new Set<string>(['principiante', 'medio', 'avanzado']);
+
+function esNivelValido(nivel: string): nivel is NivelExperiencia {
+  return NIVELES_VALIDOS.has(nivel);
+}
+
 export async function getProductosPorMateria(
   materiaPrimaId: string,
   nivelMaximo: NivelExperiencia = 'avanzado'
@@ -19,10 +25,10 @@ export async function getProductosPorMateria(
     .where(eq(productos.materiaPrimaId, materiaPrimaId))
     .orderBy(productos.numero);
 
-  return todos.filter(
-    (p) => ORDEN_DIFICULTAD[p.nivelDificultad as NivelExperiencia] <=
-           ORDEN_DIFICULTAD[nivelMaximo]
-  );
+  return todos.filter((p) => {
+    if (!esNivelValido(p.nivelDificultad)) return false;
+    return ORDEN_DIFICULTAD[p.nivelDificultad] <= ORDEN_DIFICULTAD[nivelMaximo];
+  });
 }
 
 export async function getProductoPorId(id: string) {
