@@ -1,7 +1,7 @@
 import { db } from '@/db/client';
 import { materiasPrimas, productos, insumos, pasos, parametrosCalidad, normas } from '@/db/schema';
 import { MATERIAS_PRIMAS_SEED, PRODUCTOS_SEED } from './materias';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 let seeded = false;
 
@@ -9,8 +9,8 @@ export async function seedDatabase() {
   if (seeded) return;
   seeded = true;
 
-  const existentes = await db.select().from(materiasPrimas).limit(1);
-  if (existentes.length > 0) return;
+  const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(productos);
+  if (Number(count) >= PRODUCTOS_SEED.length) return;
 
   for (const m of MATERIAS_PRIMAS_SEED) {
     await db.insert(materiasPrimas).values(m).onConflictDoNothing();

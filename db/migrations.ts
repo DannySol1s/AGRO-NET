@@ -11,9 +11,24 @@ export const migrations = {
         tag: '0000_cool_mother_askani',
         breakpoints: true,
       },
+      {
+        idx: 1,
+        when: 1780000000000,
+        tag: '0001_indices_cascade_check',
+        breakpoints: true,
+      },
     ],
   },
   migrations: {
+    m0001: `CREATE INDEX IF NOT EXISTS \`productos_materia_idx\` ON \`productos\` (\`materia_prima_id\`);
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS \`insumos_producto_idx\` ON \`insumos\` (\`producto_id\`);
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS \`pasos_producto_idx\` ON \`pasos\` (\`producto_id\`);
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS \`parametros_calidad_producto_idx\` ON \`parametros_calidad\` (\`producto_id\`);
+--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS \`normas_producto_idx\` ON \`normas\` (\`producto_id\`);`,
     m0000: `CREATE TABLE \`insumos\` (
 \t\`id\` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 \t\`producto_id\` text NOT NULL,
