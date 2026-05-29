@@ -17,13 +17,15 @@ function esNivelValido(nivel: string): nivel is NivelExperiencia {
 
 export async function getProductosPorMateria(
   materiaPrimaId: string,
-  nivelMaximo: NivelExperiencia = 'avanzado'
+  nivelMaximo: NivelExperiencia = 'avanzado',
+  limite = 50
 ) {
   const todos = await db
     .select()
     .from(productos)
     .where(eq(productos.materiaPrimaId, materiaPrimaId))
-    .orderBy(productos.numero);
+    .orderBy(productos.numero)
+    .limit(limite);
 
   return todos.filter((p) => {
     if (!esNivelValido(p.nivelDificultad)) return false;
