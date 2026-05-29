@@ -2,7 +2,9 @@ import { Tabs } from 'expo-router';
 import { Home, Box, FlaskConical, Calculator, User } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const VERDE = '#166534';
+const BOSQUE  = '#1F3D36';
+const ACTIVE  = '#C1BAAE';
+const INACTIVE = '#84a681';
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -11,11 +13,11 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: VERDE,
-        tabBarInactiveTintColor: '#9ca3af',
+        tabBarActiveTintColor:   ACTIVE,
+        tabBarInactiveTintColor: INACTIVE,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#dcfce7',
+          backgroundColor: BOSQUE,
+          borderTopColor: '#2d4030',
           borderTopWidth: 1,
           height: 60 + insets.bottom,
           paddingBottom: Math.max(insets.bottom, 4),
@@ -23,7 +25,7 @@ export default function TabLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 10,
-          fontWeight: '600',
+          fontFamily: 'Poppins_500Medium',
         },
       }}
     >
@@ -51,7 +53,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="costos"
         options={{
-          title: 'Costos',
+          title: 'Calculadora',
           tabBarIcon: ({ color, size }) => <Calculator size={size} stroke={color} />,
         }}
       />
