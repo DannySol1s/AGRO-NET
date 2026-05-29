@@ -1,5 +1,7 @@
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 import { useUsuarioStore, type HerramientaDisponible, type NivelExperiencia } from '@/store/usuario';
 
 const HERRAMIENTAS: { id: HerramientaDisponible; label: string }[] = [
@@ -20,13 +22,20 @@ const NIVELES: { id: NivelExperiencia; label: string; desc: string }[] = [
 ];
 
 export default function Perfil() {
-  const { herramientas, toggleHerramienta, nivelExperiencia, setNivelExperiencia, cantidadKg, setCantidadKg } =
-    useUsuarioStore();
+  const {
+    herramientas, toggleHerramienta,
+    nivelExperiencia, setNivelExperiencia,
+    cantidadKg, setCantidadKg,
+    resetDiagnostico,
+  } = useUsuarioStore();
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-4 pb-5">
+        <Pressable onPress={() => router.back()} className="mb-3 self-start">
+          <ChevronLeft size={24} stroke="#bbf7d0" />
+        </Pressable>
         <View className="flex-row items-center gap-3">
           <View className="bg-verde-700 rounded-xl p-2">
             <Text className="text-xl">⚖️</Text>
@@ -117,6 +126,16 @@ export default function Perfil() {
             })}
           </View>
         </View>
+
+        {/* Reconfigurar perfil */}
+        <Pressable
+          onPress={() => { resetDiagnostico(); router.replace('/diagnostico'); }}
+          className="mx-0 mb-6 py-4 rounded-2xl border-2 border-red-200 bg-red-50 items-center active:opacity-70"
+        >
+          <Text className="text-red-600 font-semibold text-sm">Reconfigurar perfil</Text>
+          <Text className="text-red-400 text-xs mt-0.5">Reinicia herramientas y nivel de experiencia</Text>
+        </Pressable>
+
       </ScrollView>
     </SafeAreaView>
   );

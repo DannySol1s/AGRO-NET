@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { materiasPrimas } from '@/db/schema';
 import { useSeleccionStore } from '@/store/seleccion';
@@ -46,6 +46,9 @@ export default function MateriasIndex() {
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-4 pb-5">
+        <Pressable onPress={() => router.back()} className="mb-3 self-start">
+          <ChevronLeft size={24} stroke="#bbf7d0" />
+        </Pressable>
         <View className="flex-row items-center gap-3 mb-1">
           <View className="bg-verde-700 rounded-xl p-2">
             <Text className="text-xl">🌿</Text>

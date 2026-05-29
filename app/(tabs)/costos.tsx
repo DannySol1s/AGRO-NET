@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { View, Text, TextInput, ScrollView } from 'react-native';
+import { View, Text, TextInput, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
 
 type Campos = {
   materiaPrima: string;
@@ -53,6 +55,9 @@ export default function Costos() {
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-4 pb-5">
+        <Pressable onPress={() => router.back()} className="mb-3 self-start">
+          <ChevronLeft size={24} stroke="#bbf7d0" />
+        </Pressable>
         <View className="flex-row items-center gap-3">
           <View className="bg-verde-700 rounded-xl p-2">
             <Text className="text-xl">💰</Text>

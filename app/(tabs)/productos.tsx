@@ -2,9 +2,10 @@ import { useEffect, useState, useMemo } from 'react';
 import { View, Text, FlatList, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Search, ChevronRight, Clock, TrendingUp } from 'lucide-react-native';
+import { Search, ChevronLeft, ChevronRight, Clock, TrendingUp } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { productos, materiasPrimas } from '@/db/schema';
+import { useUsuarioStore, type NivelExperiencia } from '@/store/usuario';
 
 type ProductoConMateria = typeof productos.$inferSelect & { nombreMateria: string };
 
@@ -27,11 +28,18 @@ const FILTRO_A_NIVEL: Record<Filtro, string | null> = {
   Todos: null, Fácil: 'principiante', Intermedio: 'medio', Avanzado: 'avanzado',
 };
 
+const NIVEL_A_FILTRO: Record<NivelExperiencia, Filtro> = {
+  principiante: 'Fácil',
+  medio:        'Intermedio',
+  avanzado:     'Todos',
+};
+
 export default function Productos() {
+  const { nivelExperiencia } = useUsuarioStore();
   const [todos, setTodos] = useState<ProductoConMateria[]>([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
-  const [filtro, setFiltro] = useState<Filtro>('Todos');
+  const [filtro, setFiltro] = useState<Filtro>(NIVEL_A_FILTRO[nivelExperiencia] ?? 'Todos');
 
   useEffect(() => {
     async function cargar() {
@@ -62,6 +70,9 @@ export default function Productos() {
     <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-4 pb-5">
+        <Pressable onPress={() => router.back()} className="mb-3 self-start">
+          <ChevronLeft size={24} stroke="#bbf7d0" />
+        </Pressable>
         <View className="flex-row items-center gap-3">
           <View className="bg-verde-700 rounded-xl p-2">
             <Text className="text-xl">⚗️</Text>
