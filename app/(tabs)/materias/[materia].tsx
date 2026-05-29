@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { materiasPrimas, productos } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { useUsuarioStore } from '@/store/usuario';
+import { useUsuarioStore, type NivelExperiencia } from '@/store/usuario';
 
 type Producto = typeof productos.$inferSelect;
 
@@ -21,10 +22,16 @@ export default function MateriasProductos() {
   const { materia } = useLocalSearchParams<{ materia: string }>();
   const { nivelExperiencia } = useUsuarioStore();
 
+  const NIVEL_A_FILTRO: Record<NivelExperiencia, typeof FILTROS[number]> = {
+    principiante: 'Principiante',
+    medio:        'Intermedio',
+    avanzado:     'Todos',
+  };
+
   const [nombreMateria, setNombreMateria] = useState('');
   const [emojiMateria, setEmojiMateria] = useState('');
   const [todosProductos, setTodosProductos] = useState<Producto[]>([]);
-  const [filtro, setFiltro] = useState<typeof FILTROS[number]>('Todos');
+  const [filtro, setFiltro] = useState<typeof FILTROS[number]>(NIVEL_A_FILTRO[nivelExperiencia] ?? 'Todos');
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
@@ -51,9 +58,9 @@ export default function MateriasProductos() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-verde-50">
+    <SafeAreaView className="flex-1 bg-verde-50" edges={['top']}>
       {/* Header */}
-      <View className="bg-verde-800 px-6 pt-12 pb-4">
+      <View className="bg-verde-800 px-6 pt-4 pb-4">
         <Pressable onPress={() => router.back()} className="mb-3">
           <ChevronLeft size={24} stroke="#bbf7d0" />
         </Pressable>

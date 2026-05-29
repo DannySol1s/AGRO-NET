@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { db } from '@/db/client';
@@ -52,9 +53,9 @@ export default function Costos() {
     : null;
 
   return (
-    <SafeAreaView className="flex-1 bg-verde-50">
+    <SafeAreaView className="flex-1 bg-verde-50" edges={['top']}>
       {/* Header */}
-      <View className="bg-tierra-700 px-6 pt-12 pb-5">
+      <View className="bg-tierra-700 px-6 pt-4 pb-5">
         <Pressable onPress={() => router.back()} className="mb-3">
           <ChevronLeft size={24} stroke="#fae8cc" />
         </Pressable>

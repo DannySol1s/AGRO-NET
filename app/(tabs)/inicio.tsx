@@ -1,9 +1,19 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Box, FlaskConical, Calculator, User, Users, ChevronRight } from 'lucide-react-native';
 
-const MENU = [
+type MenuItem = {
+  icon: React.ComponentType<{ size: number; stroke: string }>;
+  label: string;
+  desc: string;
+  color: string;
+  bg: string;
+  ruta: string | null;
+  proximamente?: boolean;
+};
+
+const MENU: MenuItem[] = [
   {
     icon: Box,
     label: 'Materias Primas',
@@ -42,9 +52,10 @@ const MENU = [
     desc: 'Comunidad y experiencias compartidas',
     color: '#0f766e',
     bg: '#ccfbf1',
-    ruta: '/(tabs)/comunidad',
+    ruta: null,
+    proximamente: true,
   },
-] as const;
+];
 
 export default function Inicio() {
   return (
@@ -71,8 +82,11 @@ export default function Inicio() {
             return (
               <Pressable
                 key={item.label}
-                onPress={() => router.push(item.ruta as any)}
-                className="flex-row items-center bg-white rounded-2xl p-4 border border-gray-100 active:opacity-75"
+                onPress={() => item.ruta
+                  ? router.push(item.ruta as any)
+                  : Alert.alert('Próximamente', 'La Red de Productores estará disponible en la siguiente versión de AGRO-NET.')
+                }
+                className={`flex-row items-center bg-white rounded-2xl p-4 border border-gray-100 active:opacity-75 ${item.proximamente ? 'opacity-60' : ''}`}
                 style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
               >
                 <View
@@ -82,7 +96,14 @@ export default function Inicio() {
                   <Icon size={24} stroke={item.color} />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-gray-900 font-semibold text-sm mb-0.5">{item.label}</Text>
+                  <View className="flex-row items-center gap-2">
+                    <Text className="text-gray-900 font-semibold text-sm mb-0.5">{item.label}</Text>
+                    {item.proximamente && (
+                      <View className="bg-gray-100 rounded-full px-2 py-0.5">
+                        <Text className="text-gray-500 text-xs font-medium">Próximamente</Text>
+                      </View>
+                    )}
+                  </View>
                   <Text className="text-gray-500 text-xs leading-4">{item.desc}</Text>
                 </View>
                 <ChevronRight size={18} stroke="#9ca3af" />
