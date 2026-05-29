@@ -1,84 +1,103 @@
-import { View, Text, ScrollView, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Leaf, Calculator, ShieldCheck, Lightbulb } from 'lucide-react-native';
-import { useUsuarioStore } from '@/store/usuario';
+import { Box, FlaskConical, Calculator, User, Users, ChevronRight } from 'lucide-react-native';
 
-const ACCESOS = [
-  { icon: Leaf,        label: 'Mis Materias',     color: '#166534', bg: '#dcfce7', ruta: '/(tabs)/materias' },
-  { icon: Calculator,  label: 'Calculadora',       color: '#a85c12', bg: '#fae8cc', ruta: '/(tabs)/materias' },
-  { icon: ShieldCheck, label: 'Calidad',           color: '#1d4ed8', bg: '#dbeafe', ruta: '/(tabs)/calidad' },
-  { icon: Lightbulb,   label: 'Innovación',        color: '#7c3aed', bg: '#ede9fe', ruta: '/(tabs)/calidad' },
-];
-
-const NIVEL_LABELS = {
-  principiante: 'Principiante 🌱',
-  medio: 'Intermedio 🌿',
-  avanzado: 'Avanzado 🌳',
-};
+const MENU = [
+  {
+    icon: Box,
+    label: 'Materias Primas',
+    desc: 'Información nutricional y propiedades funcionales',
+    color: '#166534',
+    bg: '#dcfce7',
+    ruta: '/(tabs)/materias',
+  },
+  {
+    icon: FlaskConical,
+    label: 'Productos Agroindustriales',
+    desc: 'Procesos técnicos completos de transformación',
+    color: '#166534',
+    bg: '#dcfce7',
+    ruta: '/(tabs)/productos',
+  },
+  {
+    icon: Calculator,
+    label: 'Calculadora de Costos',
+    desc: 'Análisis económico y rentabilidad',
+    color: '#1d4ed8',
+    bg: '#dbeafe',
+    ruta: '/(tabs)/costos',
+  },
+  {
+    icon: User,
+    label: 'Mi Perfil',
+    desc: 'Configuración y datos del productor',
+    color: '#7c3aed',
+    bg: '#ede9fe',
+    ruta: '/(tabs)/perfil',
+  },
+  {
+    icon: Users,
+    label: 'Red de Productores',
+    desc: 'Comunidad y experiencias compartidas',
+    color: '#0f766e',
+    bg: '#ccfbf1',
+    ruta: '/(tabs)/comunidad',
+  },
+] as const;
 
 export default function Inicio() {
-  const { nivelExperiencia, herramientas } = useUsuarioStore();
-
   return (
-    <SafeAreaView className="flex-1 bg-verde-50">
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="bg-verde-800 px-6 pt-12 pb-8">
-          <Text className="text-verde-200 text-sm mb-1">Bienvenido a</Text>
-          <Text className="text-white text-3xl font-bold">AGRO-NET</Text>
-          <Text className="text-verde-200 text-sm mt-1">
-            {NIVEL_LABELS[nivelExperiencia]} · {herramientas.length} herramientas
+        <View className="bg-verde-800 px-6 pt-4 pb-6">
+          <View className="flex-row items-center justify-between mb-1">
+            <Text className="text-white text-2xl font-bold tracking-wide">AGRO-NET</Text>
+            <View className="bg-verde-700 rounded-lg px-3 py-1">
+              <Text className="text-verde-200 text-xs font-semibold">AGRO-NET</Text>
+            </View>
+          </View>
+          <Text className="text-verde-300 text-xs font-semibold tracking-widest mb-3">
+            CREA, CONSERVA Y EMPRENDE
           </Text>
+          <Text className="text-verde-100 text-sm">Plataforma Agroindustrial Profesional</Text>
         </View>
 
-        {/* Banner principal */}
-        <View className="mx-6 mt-6 bg-cosecha-400 rounded-2xl p-5">
-          <Text className="text-verde-900 text-base font-bold mb-1">
-            100 productos agroalimentarios
-          </Text>
-          <Text className="text-verde-800 text-sm leading-5">
-            Selecciona tu materia prima y descubre todo lo que puedes elaborar con ella.
-          </Text>
-          <Pressable
-            onPress={() => router.push('/(tabs)/materias')}
-            className="bg-verde-800 rounded-xl py-3 px-5 mt-4 self-start"
-          >
-            <Text className="text-white font-bold text-sm">Explorar →</Text>
-          </Pressable>
-        </View>
-
-        {/* Accesos rápidos */}
-        <View className="px-6 mt-6">
-          <Text className="text-verde-900 text-lg font-bold mb-4">Accesos rápidos</Text>
-          <View className="flex-row flex-wrap gap-3">
-            {ACCESOS.map((a) => {
-              const Icon = a.icon;
-              return (
-                <Pressable
-                  key={a.label}
-                  onPress={() => router.push(a.ruta as any)}
-                  className="flex-1 min-w-[44%] rounded-2xl p-4 active:opacity-80"
-                  style={{ backgroundColor: a.bg }}
+        {/* Lista de menú */}
+        <View className="px-4 pt-4 gap-3">
+          {MENU.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Pressable
+                key={item.label}
+                onPress={() => router.push(item.ruta as any)}
+                className="flex-row items-center bg-white rounded-2xl p-4 border border-gray-100 active:opacity-75"
+                style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}
+              >
+                <View
+                  className="w-12 h-12 rounded-xl items-center justify-center mr-4"
+                  style={{ backgroundColor: item.bg }}
                 >
-                  <Icon size={28} stroke={a.color} />
-                  <Text className="text-sm font-semibold mt-3" style={{ color: a.color }}>
-                    {a.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+                  <Icon size={24} stroke={item.color} />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-gray-900 font-semibold text-sm mb-0.5">{item.label}</Text>
+                  <Text className="text-gray-500 text-xs leading-4">{item.desc}</Text>
+                </View>
+                <ChevronRight size={18} stroke="#9ca3af" />
+              </Pressable>
+            );
+          })}
         </View>
 
-        {/* Info offline */}
-        <View className="mx-6 mt-6 mb-8 bg-verde-100 rounded-2xl p-4 flex-row items-center gap-3">
-          <Text className="text-2xl">📶</Text>
-          <View className="flex-1">
-            <Text className="text-verde-800 font-semibold text-sm">Funciona sin internet</Text>
-            <Text className="text-verde-700 text-xs mt-0.5">
-              Todas las recetas y procesos están disponibles offline.
-            </Text>
-          </View>
+        {/* Footer */}
+        <View className="mx-4 mt-5 mb-6 bg-verde-50 rounded-xl p-4 border border-verde-100">
+          <Text className="text-verde-700 text-xs text-center leading-5">
+            Información basada en{' '}
+            <Text className="font-semibold text-verde-800">parámetros clave y normas oficiales mexicanas (NOM, CODEX)</Text>
+            {' '}integrada en cada producto agroindustrial.
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
