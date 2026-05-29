@@ -5,13 +5,14 @@ import { ChevronRight, ChevronLeft } from 'lucide-react-native';
 import { useUsuarioStore, type HerramientaDisponible, type NivelExperiencia } from '@/store/usuario';
 
 const HERRAMIENTAS: { id: HerramientaDisponible; label: string; emoji: string }[] = [
-  { id: 'olla_grande',   label: 'Olla grande',     emoji: '🫕' },
-  { id: 'licuadora',     label: 'Licuadora',        emoji: '🥤' },
-  { id: 'colador',       label: 'Colador / malla',  emoji: '🧴' },
-  { id: 'frascos_vidrio',label: 'Frascos de vidrio',emoji: '🫙' },
-  { id: 'refractometro', label: 'Refractómetro',    emoji: '🔬' },
-  { id: 'termometro',    label: 'Termómetro',       emoji: '🌡️' },
-  { id: 'deshidratador', label: 'Deshidratador',    emoji: '☀️' },
+  { id: 'olla_grande',    label: 'Olla grande',      emoji: '🫕' },
+  { id: 'licuadora',      label: 'Licuadora',         emoji: '🥤' },
+  { id: 'cuchillos',      label: 'Cuchillos',         emoji: '🔪' },
+  { id: 'tabla_cortar',   label: 'Tabla de cortar',   emoji: '🪵' },
+  { id: 'bascula',        label: 'Báscula',            emoji: '⚖️' },
+  { id: 'termometro',     label: 'Termómetro',        emoji: '🌡️' },
+  { id: 'envases_frascos',label: 'Envases / Frascos', emoji: '🫙' },
+  { id: 'refrigerador',   label: 'Refrigerador',      emoji: '🧊' },
 ];
 
 const NIVELES: { id: NivelExperiencia; label: string; desc: string; emoji: string }[] = [

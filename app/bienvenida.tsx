@@ -1,45 +1,71 @@
-import { View, Text, Pressable, StatusBar } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Sprout } from 'lucide-react-native';
+import { TrendingUp, Award, Calculator } from 'lucide-react-native';
+
+const FEATURES = [
+  { icon: TrendingUp, label: 'Formulaciones Técnicas', desc: 'Procesos profesionales con parámetros de calidad' },
+  { icon: Award,      label: 'Normativas Oficiales',   desc: 'NOM, CODEX y certificaciones de calidad' },
+  { icon: Calculator, label: 'Análisis Económico',     desc: 'Costos, rendimientos y estrategias de comercialización' },
+];
 
 export default function Bienvenida() {
   return (
-    <View className="flex-1 bg-verde-800">
-      <StatusBar barStyle="light-content" backgroundColor="#166534" />
-
-      <View className="flex-1 items-center justify-center px-8">
-        <View className="bg-verde-700 rounded-full p-8 mb-6">
-          <Sprout size={72} stroke="#bbf7d0" />
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1 px-6 pt-8 items-center justify-center">
+        {/* Logo */}
+        <View className="w-24 h-24 bg-gray-100 rounded-3xl items-center justify-center mb-2 border border-gray-200">
+          <Text className="text-4xl">🌱</Text>
         </View>
 
-        <Text className="text-white text-4xl font-bold text-center mb-2">
+        {/* Título */}
+        <Text className="text-verde-700 text-4xl font-bold tracking-widest mt-4 mb-1">
           AGRO-NET
         </Text>
-
-        <Text className="text-verde-200 text-base text-center mb-2">
-          Productos Agroindustriales
+        <Text className="text-verde-500 text-xs font-semibold tracking-widest mb-4">
+          CREA, CONSERVA Y EMPRENDE
         </Text>
 
-        <View className="w-16 h-1 bg-cosecha-400 rounded-full my-6" />
-
-        <Text className="text-white text-xl font-semibold text-center leading-8 px-4">
-          "Transforma tu cosecha,{'\n'}transforma tu futuro"
+        <Text className="text-gray-800 text-lg font-semibold text-center mb-1">
+          Plataforma Profesional de Transformación Agroalimentaria
+        </Text>
+        <Text className="text-gray-400 text-sm text-center mb-8">
+          Tecnología al servicio del campo mexicano
         </Text>
 
-        <Text className="text-verde-200 text-sm text-center mt-4 leading-5">
-          Aprende a elaborar más de 100 productos{'\n'}
-          directamente de tu parcela, sin equipos avanzados.
-        </Text>
+        {/* Features */}
+        <View className="w-full bg-gray-50 rounded-2xl p-4 gap-4 mb-8 border border-gray-100">
+          {FEATURES.map(({ icon: Icon, label, desc }) => (
+            <View key={label} className="flex-row items-start gap-3">
+              <View className="w-8 h-8 bg-verde-100 rounded-lg items-center justify-center mt-0.5">
+                <Icon size={16} stroke="#166534" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-gray-800 font-semibold text-sm">{label}</Text>
+                <Text className="text-gray-500 text-xs mt-0.5">{desc}</Text>
+              </View>
+            </View>
+          ))}
+        </View>
       </View>
 
-      <View className="px-8 pb-12">
+      {/* CTA */}
+      <View className="px-6 pb-8">
         <Pressable
           onPress={() => router.push('/diagnostico')}
-          className="bg-cosecha-500 rounded-2xl py-5 items-center active:opacity-80"
+          className="bg-verde-700 rounded-2xl py-4 items-center active:opacity-80"
         >
-          <Text className="text-verde-900 text-xl font-bold">Comenzar</Text>
+          <Text className="text-white text-base font-bold">Iniciar Plataforma ✨</Text>
         </Pressable>
+
+        <View className="flex-row items-center justify-center gap-2 mt-4">
+          <View className="w-2 h-2 rounded-full bg-verde-500" />
+          <Text className="text-gray-500 text-xs">Funciona sin conexión</Text>
+        </View>
+        <Text className="text-gray-400 text-xs text-center mt-1">
+          Desarrollado para productores rurales mexicanos
+        </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
