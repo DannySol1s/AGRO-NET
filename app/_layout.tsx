@@ -1,12 +1,7 @@
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import {
-  useFonts,
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-} from '@expo-google-fonts/poppins';
+import { useFonts } from 'expo-font';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '../global.css';
 
@@ -14,9 +9,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
+    Poppins_400Regular:  require('../assets/fonts/Poppins_400Regular.ttf'),
+    Poppins_500Medium:   require('../assets/fonts/Poppins_500Medium.ttf'),
+    Poppins_600SemiBold: require('../assets/fonts/Poppins_600SemiBold.ttf'),
   });
 
   useEffect(() => {
