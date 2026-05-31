@@ -50,7 +50,7 @@ export const useUsuarioStore = create<UsuarioState>()(
         })),
 
       resetDiagnostico: () =>
-        set({ nivelExperiencia: 'principiante', herramientas: [], cantidadKg: '' }),
+        set({ onboardingCompleto: false, nivelExperiencia: 'principiante', herramientas: [], cantidadKg: '' }),
     }),
     {
       name: 'usuario-storage',
