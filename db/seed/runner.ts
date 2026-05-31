@@ -1,16 +1,18 @@
 import { db } from '@/db/client';
 import { materiasPrimas, productos, insumos, pasos, parametrosCalidad, normas } from '@/db/schema';
 import { MATERIAS_PRIMAS_SEED, PRODUCTOS_SEED } from './materias';
-import { eq, sql } from 'drizzle-orm';
-
-let seeded = false;
+import { sql } from 'drizzle-orm';
 
 export async function seedDatabase() {
-  if (seeded) return;
-  seeded = true;
+  // Verifica ambas tablas para evitar dejar la BD en estado inconsistente
+  // si un crash previo pobló productos pero no materias_primas
+  const [{ pCount }] = await db.select({ pCount: sql<number>`count(*)` }).from(productos);
+  const [{ mCount }] = await db.select({ mCount: sql<number>`count(*)` }).from(materiasPrimas);
 
-  const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(productos);
-  if (Number(count) >= PRODUCTOS_SEED.length) return;
+  if (
+    Number(pCount) >= PRODUCTOS_SEED.length &&
+    Number(mCount) >= MATERIAS_PRIMAS_SEED.length
+  ) return;
 
   for (const m of MATERIAS_PRIMAS_SEED) {
     await db.insert(materiasPrimas).values(m).onConflictDoNothing();
@@ -18,15 +20,15 @@ export async function seedDatabase() {
 
   for (const p of PRODUCTOS_SEED) {
     await db.insert(productos).values({
-      id:            p.id,
+      id:             p.id,
       materiaPrimaId: p.materiaPrimaId,
-      numero:        p.numero,
-      nombre:        p.nombre,
+      numero:         p.numero,
+      nombre:         p.nombre,
       nivelDificultad: p.nivelDificultad,
-      rendimientoKg: p.rendimientoKg ?? null,
-      rendimientoL:  p.rendimientoL ?? null,
-      vidaUtilDesc:  p.vidaUtilDesc,
-      vidaUtilMeses: p.vidaUtilMeses ?? null,
+      rendimientoKg:  p.rendimientoKg ?? null,
+      rendimientoL:   p.rendimientoL ?? null,
+      vidaUtilDesc:   p.vidaUtilDesc,
+      vidaUtilMeses:  p.vidaUtilMeses ?? null,
     }).onConflictDoNothing();
 
     for (const ins of p.insumos) {
