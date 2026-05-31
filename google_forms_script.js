@@ -22,7 +22,7 @@ function crearFormularioAgroNet() {
 
   form.setConfirmationMessage(
     "✅ ¡Gracias! Tus respuestas fueron registradas.\n" +
-      "El Sebas de ing. en sistemas y se pondrá en contacto contigo.",
+      "El equipo de AGRO-NET las revisará y se pondrá en contacto contigo.",
   );
 
   form.setCollectEmail(false);

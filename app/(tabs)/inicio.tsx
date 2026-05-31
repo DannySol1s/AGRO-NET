@@ -74,7 +74,10 @@ export default function Inicio() {
               </Text>
             </View>
           </View>
-          <Pressable className="w-10 h-10 bg-verde-700 rounded-xl items-center justify-center active:opacity-70">
+          <Pressable
+            onPress={() => Alert.alert('Notificaciones', 'Las notificaciones estarán disponibles próximamente.')}
+            className="w-10 h-10 bg-verde-700 rounded-xl items-center justify-center active:opacity-70"
+          >
             <Bell size={18} stroke="#d6e2d4" />
           </Pressable>
         </View>

@@ -437,7 +437,7 @@ export default function ProductoDetalle() {
             <View className="bg-verde-100 rounded-2xl p-4 mb-4">
               <Text className="text-verde-800 font-bold text-sm mb-1">💡 Cómo usar la calculadora</Text>
               <Text className="text-verde-700 text-xs leading-5">
-                Ve a la pestaña Costos en el menú principal, ingresa el precio de cada ingrediente en tu comunidad y obtén tu inversión total, precio sugerido y ganancia estimada.
+                Toca el botón de abajo para abrir la calculadora con los ingredientes de este producto ya cargados. Ingresa el precio de cada uno en tu comunidad y obtén tu inversión total, precio sugerido y ganancia estimada.
               </Text>
             </View>
             <Pressable
