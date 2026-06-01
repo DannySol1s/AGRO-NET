@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, Share, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ChevronLeft, Share2, Trash2, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { ChevronLeft, Trash2, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { calculos } from '@/db/schema';
 import { desc, eq } from 'drizzle-orm';
@@ -38,13 +38,15 @@ const CAMPOS_COSTO: { campo: keyof Omit<Campos, 'productoNombre' | 'unidades' | 
 
 function parse(v: string): number { return parseFloat(v) || 0; }
 
+const CAMPOS_VACIO: Campos = {
+  productoNombre: '',
+  materiaPrima: '', empaque: '', manoObra: '',
+  gasAgua: '', transporte: '', merma: '', otrosGastos: '',
+  unidades: '', tamanoUnidad: '', margen: '50',
+};
+
 export default function Costos() {
-  const [campos, setCampos] = useState<Campos>({
-    productoNombre: '',
-    materiaPrima: '', empaque: '', manoObra: '',
-    gasAgua: '', transporte: '', merma: '', otrosGastos: '',
-    unidades: '', tamanoUnidad: '', margen: '50',
-  });
+  const [campos, setCampos] = useState<Campos>(CAMPOS_VACIO);
   const [historial, setHistorial] = useState<Calculo[]>([]);
   const [mostrarHistorial, setMostrarHistorial] = useState(false);
 
@@ -150,9 +152,18 @@ export default function Costos() {
         </View>
 
         {/* Costos */}
-        <Text className="text-carbon text-sm font-bold mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-          Costos de producción
-        </Text>
+        <View className="flex-row items-center justify-between mb-3">
+          <Text className="text-carbon text-sm font-bold" style={{ fontFamily: 'Poppins_600SemiBold' }}>
+            Costos de producción
+          </Text>
+          <Pressable
+            onPress={() => setCampos(CAMPOS_VACIO)}
+            className="flex-row items-center gap-1.5 bg-tierra-100 px-3 py-1.5 rounded-xl active:opacity-70"
+          >
+            <RotateCcw size={13} stroke="#5c5248" />
+            <Text className="text-tierra-700 text-xs font-semibold">Limpiar todo</Text>
+          </Pressable>
+        </View>
         <View className="gap-3 mb-4">
           {CAMPOS_COSTO.map(({ campo, label, placeholder }) => (
             <View key={campo}>
