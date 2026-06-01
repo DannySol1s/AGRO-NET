@@ -14,8 +14,19 @@ export type ResultadoCalculo = {
   margenPorcentaje: number;
 };
 
+export type RangoPrecios = {
+  costoTotal:       number;
+  costoPorUnidad:   number;
+  precioMinimo:     number;   // costo + 20% — punto de equilibrio rentable
+  precioRecomendado: number;  // costo + margen elegido por el productor
+  precioMaximo:     number;   // costo + 100% — techo de mercado sugerido
+  gananciaNeta:     number;   // con precio recomendado
+  unidadesPorLote:  number;   // cuántas unidades salen del lote
+};
+
 const MARGEN_DEFAULT = 0.4;
 
+// Cálculo por kg — usado en la calculadora específica por producto
 export function calcularCostos(
   insumos: InsumoConPrecio[],
   rendimientoKg: number,
@@ -36,6 +47,36 @@ export function calcularCostos(
     precioSugeridoKg,
     gananciaEstimada,
     margenPorcentaje: margen * 100,
+  };
+}
+
+// Cálculo con rango de precios — usado en la calculadora general
+export function calcularRango(
+  costoTotal: number,
+  unidades: number,
+  margenElegido: number,      // porcentaje que elige el productor, ej. 50
+  tamanoUnidadG: number = 0   // gramos/ml por unidad (0 = ignorar)
+): RangoPrecios {
+  const costoPorUnidad = unidades > 0 ? costoTotal / unidades : 0;
+  const precioMinimo      = costoPorUnidad * 1.20;  // mínimo 20%
+  const precioRecomendado = costoPorUnidad * (1 + margenElegido / 100);
+  const precioMaximo      = costoPorUnidad * 2.00;  // máximo 100%
+  const gananciaNeta      = (precioRecomendado - costoPorUnidad) * unidades;
+
+  // Si el productor indicó tamaño de empaque, calcular unidades reales por lote
+  // Ejemplo: 10 kg = 10,000 g ÷ 250 g/frasco = 40 frascos
+  const unidadesPorLote = tamanoUnidadG > 0 && costoTotal > 0
+    ? Math.floor((unidades * 1000) / tamanoUnidadG)
+    : unidades;
+
+  return {
+    costoTotal,
+    costoPorUnidad,
+    precioMinimo,
+    precioRecomendado,
+    precioMaximo,
+    gananciaNeta,
+    unidadesPorLote,
   };
 }
 

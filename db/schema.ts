@@ -64,3 +64,17 @@ export const normas = sqliteTable('normas', {
 }, (t) => ({
   productoIdx: index('normas_producto_idx').on(t.productoId),
 }));
+
+// Historial de cálculos de costos del productor
+export const calculos = sqliteTable('calculos', {
+  id:               integer('id').primaryKey({ autoIncrement: true }),
+  fecha:            text('fecha').notNull(),           // ISO timestamp
+  productoNombre:   text('producto_nombre').notNull(), // nombre libre
+  costoTotal:       real('costo_total').notNull(),
+  unidades:         real('unidades').notNull(),
+  margenPct:        real('margen_pct').notNull(),
+  precioMinimo:     real('precio_minimo').notNull(),
+  precioRecomendado: real('precio_recomendado').notNull(),
+  precioMaximo:     real('precio_maximo').notNull(),
+  tamanoUnidadG:    real('tamano_unidad_g'),           // null = no se usó
+});

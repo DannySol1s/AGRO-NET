@@ -17,9 +17,27 @@ export const migrations = {
         tag: '0001_indices_cascade_check',
         breakpoints: true,
       },
+      {
+        idx: 2,
+        when: 1780100000000,
+        tag: '0002_tabla_calculos',
+        breakpoints: true,
+      },
     ],
   },
   migrations: {
+    m0002: `CREATE TABLE \`calculos\` (
+\t\`id\` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+\t\`fecha\` text NOT NULL,
+\t\`producto_nombre\` text NOT NULL,
+\t\`costo_total\` real NOT NULL,
+\t\`unidades\` real NOT NULL,
+\t\`margen_pct\` real NOT NULL,
+\t\`precio_minimo\` real NOT NULL,
+\t\`precio_recomendado\` real NOT NULL,
+\t\`precio_maximo\` real NOT NULL,
+\t\`tamano_unidad_g\` real
+);`,
     m0001: `CREATE INDEX IF NOT EXISTS \`productos_materia_idx\` ON \`productos\` (\`materia_prima_id\`);
 --> statement-breakpoint
 CREATE INDEX IF NOT EXISTS \`insumos_producto_idx\` ON \`insumos\` (\`producto_id\`);
