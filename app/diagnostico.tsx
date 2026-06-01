@@ -5,14 +5,25 @@ import { ChevronRight, ChevronLeft } from 'lucide-react-native';
 import { useUsuarioStore, type HerramientaDisponible, type NivelExperiencia } from '@/store/usuario';
 
 const HERRAMIENTAS: { id: HerramientaDisponible; label: string; emoji: string }[] = [
-  { id: 'olla_grande',    label: 'Olla grande',      emoji: '🫕' },
-  { id: 'licuadora',      label: 'Licuadora',         emoji: '🥤' },
-  { id: 'cuchillos',      label: 'Cuchillos',         emoji: '🔪' },
-  { id: 'tabla_cortar',   label: 'Tabla de cortar',   emoji: '🪵' },
-  { id: 'bascula',        label: 'Báscula',            emoji: '⚖️' },
-  { id: 'termometro',     label: 'Termómetro',        emoji: '🌡️' },
-  { id: 'envases_frascos',label: 'Envases / Frascos', emoji: '🫙' },
-  { id: 'refrigerador',   label: 'Refrigerador',      emoji: '🧊' },
+  { id: 'olla_grande',          label: 'Olla grande',           emoji: '🫕' },
+  { id: 'estufa',               label: 'Estufa',                emoji: '🔥' },
+  { id: 'licuadora',            label: 'Licuadora',             emoji: '🥤' },
+  { id: 'cuchillos',            label: 'Cuchillos',             emoji: '🔪' },
+  { id: 'tabla_cortar',         label: 'Tabla de cortar',       emoji: '🪵' },
+  { id: 'bascula',              label: 'Báscula',               emoji: '⚖️' },
+  { id: 'termometro',           label: 'Termómetro',            emoji: '🌡️' },
+  { id: 'envases_frascos',      label: 'Envases / Frascos',     emoji: '🫙' },
+  { id: 'refrigerador',         label: 'Refrigerador',          emoji: '🧊' },
+  { id: 'recipientes_plasticos',label: 'Recipientes plásticos', emoji: '🪣' },
+  { id: 'cucharas_acero',       label: 'Cucharas de acero',     emoji: '🥄' },
+  { id: 'pelador',              label: 'Pelador',               emoji: '🫛' },
+  { id: 'rallador',             label: 'Rallador',              emoji: '🧀' },
+  { id: 'molino_mano',          label: 'Molino de mano',        emoji: '⚙️' },
+  { id: 'exprimidor',           label: 'Exprimidor',            emoji: '🍋' },
+  { id: 'colador',              label: 'Colador',               emoji: '🫧' },
+  { id: 'vasos_medidores',      label: 'Vasos medidores',       emoji: '🥛' },
+  { id: 'pinzas_cocina',        label: 'Pinzas de cocina',      emoji: '🦾' },
+  { id: 'embudo',               label: 'Embudo',                emoji: '🔻' },
 ];
 
 const NIVELES: { id: NivelExperiencia; label: string; desc: string; emoji: string }[] = [

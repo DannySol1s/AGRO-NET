@@ -12,35 +12,50 @@ export type HerramientaDisponible =
   | 'bascula'
   | 'termometro'
   | 'envases_frascos'
-  | 'refrigerador';
+  | 'refrigerador'
+  | 'estufa'
+  | 'recipientes_plasticos'
+  | 'cucharas_acero'
+  | 'pelador'
+  | 'rallador'
+  | 'molino_mano'
+  | 'exprimidor'
+  | 'colador'
+  | 'vasos_medidores'
+  | 'pinzas_cocina'
+  | 'embudo';
 
 type UsuarioState = {
   onboardingCompleto: boolean;
-  nombre: string;
-  nivelExperiencia: NivelExperiencia;
-  herramientas: HerramientaDisponible[];
-  cantidadKg: string;
+  nombre:             string;
+  municipio:          string;
+  nivelExperiencia:   NivelExperiencia;
+  herramientas:       HerramientaDisponible[];
+  cantidadKg:         string;
   setOnboardingCompleto: (valor: boolean) => void;
-  setNombre: (nombre: string) => void;
-  setNivelExperiencia: (nivel: NivelExperiencia) => void;
-  toggleHerramienta: (herramienta: HerramientaDisponible) => void;
-  setCantidadKg: (cantidad: string) => void;
-  resetDiagnostico: () => void;
+  setNombre:             (nombre: string) => void;
+  setMunicipio:          (municipio: string) => void;
+  setNivelExperiencia:   (nivel: NivelExperiencia) => void;
+  toggleHerramienta:     (herramienta: HerramientaDisponible) => void;
+  setCantidadKg:         (cantidad: string) => void;
+  resetDiagnostico:      () => void;
 };
 
 export const useUsuarioStore = create<UsuarioState>()(
   persist(
     (set) => ({
       onboardingCompleto: false,
-      nombre: '',
-      nivelExperiencia: 'principiante',
-      herramientas: [],
-      cantidadKg: '',
+      nombre:             '',
+      municipio:          '',
+      nivelExperiencia:   'principiante',
+      herramientas:       [],
+      cantidadKg:         '',
 
-      setOnboardingCompleto: (valor) => set({ onboardingCompleto: valor }),
-      setNombre: (nombre) => set({ nombre }),
-      setNivelExperiencia: (nivel) => set({ nivelExperiencia: nivel }),
-      setCantidadKg: (cantidadKg) => set({ cantidadKg }),
+      setOnboardingCompleto: (valor)      => set({ onboardingCompleto: valor }),
+      setNombre:             (nombre)     => set({ nombre }),
+      setMunicipio:          (municipio)  => set({ municipio }),
+      setNivelExperiencia:   (nivel)      => set({ nivelExperiencia: nivel }),
+      setCantidadKg:         (cantidadKg) => set({ cantidadKg }),
 
       toggleHerramienta: (herramienta) =>
         set((state) => ({
