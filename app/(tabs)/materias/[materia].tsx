@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, Pressable } from 'react-native';
+import { View, Text, FlatList, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
@@ -7,6 +7,7 @@ import { db } from '@/db/client';
 import { materiasPrimas, productos } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { useUsuarioStore, type NivelExperiencia } from '@/store/usuario';
+import { useSeleccionStore } from '@/store/seleccion';
 
 type Producto = typeof productos.$inferSelect;
 
@@ -21,6 +22,7 @@ const FILTROS = ['Todos', 'Principiante', 'Intermedio', 'Avanzado'] as const;
 export default function MateriasProductos() {
   const { materia } = useLocalSearchParams<{ materia: string }>();
   const { nivelExperiencia } = useUsuarioStore();
+  const { cantidadBaseKg, setCantidadBaseKg } = useSeleccionStore();
 
   const NIVEL_A_FILTRO: Record<NivelExperiencia, typeof FILTROS[number]> = {
     principiante: 'Principiante',
@@ -69,6 +71,24 @@ export default function MateriasProductos() {
         <Text className="text-verde-200 text-sm mt-1">
           {todosProductos.length} productos disponibles
         </Text>
+      </View>
+
+      {/* Cantidad disponible */}
+      <View className="px-4 pt-3 pb-1">
+        <View className="flex-row items-center bg-white border border-verde-200 rounded-xl px-3 py-2 gap-2">
+          <Text className="text-verde-700 text-sm">⚖️</Text>
+          <TextInput
+            className="flex-1 text-sm text-carbon"
+            placeholder={`¿Cuántos kg de ${nombreMateria || 'esta materia'} tienes?`}
+            placeholderTextColor="#84a681"
+            keyboardType="numeric"
+            value={cantidadBaseKg}
+            onChangeText={setCantidadBaseKg}
+          />
+          {cantidadBaseKg.length > 0 && (
+            <Text className="text-verde-700 text-xs font-semibold">{cantidadBaseKg} kg</Text>
+          )}
+        </View>
       </View>
 
       {/* Filtros */}

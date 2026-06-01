@@ -10,6 +10,7 @@ import * as Speech from 'expo-speech';
 import { db } from '@/db/client';
 import { productos, insumos, pasos, parametrosCalidad, normas } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { useSeleccionStore } from '@/store/seleccion';
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
@@ -89,6 +90,7 @@ const COMERCIAL_TIPS = [
 
 export default function ProductoDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { cantidadBaseKg } = useSeleccionStore();
   const [tab, setTab] = useState<Tab>('formulacion');
   const [producto, setProducto] = useState<typeof productos.$inferSelect | null>(null);
   const [listaInsumos, setListaInsumos] = useState<(typeof insumos.$inferSelect)[]>([]);
@@ -96,9 +98,9 @@ export default function ProductoDetalle() {
   const [listaParametros, setListaParametros] = useState<(typeof parametrosCalidad.$inferSelect)[]>([]);
   const [listaNormas, setListaNormas] = useState<(typeof normas.$inferSelect)[]>([]);
 
-  // ScaleAdjuster — inicia con la cantidad configurada en el perfil si existe
+  // ScaleAdjuster — pre-llena con los kg disponibles de la materia prima actual
   const [escalaAbierta, setEscalaAbierta] = useState(false);
-  const [cantidadDeseada, setCantidadDeseada] = useState('');
+  const [cantidadDeseada, setCantidadDeseada] = useState(cantidadBaseKg);
 
   // AudioReader
   const [leyendo, setLeyendo] = useState(false);
