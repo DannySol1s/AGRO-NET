@@ -265,8 +265,29 @@ export default function Inicio() {
           </Pressable>
         </View>
 
+        {/* ── ASISTENTE DE VOZ (integrado en scroll) ─ */}
+        <Pressable
+          onPress={() => Alert.alert('Asistente de voz', 'Próximamente disponible.')}
+          className="mx-4 mt-3 active:opacity-75"
+        >
+          <View
+            className="bg-cosecha-500 rounded-2xl p-4 flex-row items-center gap-4"
+            style={{ shadowColor: '#9E5A38', shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 3 }}
+          >
+            <View className="w-12 h-12 bg-white bg-opacity-20 rounded-xl items-center justify-center">
+              <Mic size={24} stroke="#fff" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-white font-bold text-sm" style={{ fontFamily: 'Poppins_600SemiBold' }}>
+                Asistente de voz
+              </Text>
+              <Text className="text-white text-xs opacity-80">Próximamente disponible</Text>
+            </View>
+          </View>
+        </Pressable>
+
         {/* ── NOTA NOM/CODEX ──────────────────────── */}
-        <View className="mx-4 mt-5 mb-6 bg-verde-800 rounded-2xl p-4">
+        <View className="mx-4 mt-4 mb-8 bg-verde-800 rounded-2xl p-4">
           <Text className="text-verde-200 text-xs text-center leading-5">
             Información basada en{' '}
             <Text className="font-bold text-verde-100">
@@ -276,26 +297,6 @@ export default function Inicio() {
           </Text>
         </View>
       </ScrollView>
-
-      {/* ── FAB ASISTENTE DE VOZ ─────────────────── */}
-      <View className="absolute bottom-8 right-5">
-        <Pressable
-          onPress={() => Alert.alert('Asistente de voz', 'Próximamente disponible.')}
-          className="w-16 h-16 rounded-full bg-cosecha-500 items-center justify-center active:opacity-80"
-          style={{
-            shadowColor: '#9E5A38',
-            shadowOpacity: 0.4,
-            shadowRadius: 12,
-            shadowOffset: { width: 0, height: 4 },
-            elevation: 8,
-          }}
-        >
-          <Mic size={26} stroke="#fff" />
-        </Pressable>
-        <Text className="text-tierra-600 text-xs text-center mt-1.5">
-          Asistente de voz
-        </Text>
-      </View>
     </SafeAreaView>
   );
 }
