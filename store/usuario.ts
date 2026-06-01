@@ -31,13 +31,11 @@ type UsuarioState = {
   municipio:          string;
   nivelExperiencia:   NivelExperiencia;
   herramientas:       HerramientaDisponible[];
-  cantidadKg:         string;
   setOnboardingCompleto: (valor: boolean) => void;
   setNombre:             (nombre: string) => void;
   setMunicipio:          (municipio: string) => void;
   setNivelExperiencia:   (nivel: NivelExperiencia) => void;
   toggleHerramienta:     (herramienta: HerramientaDisponible) => void;
-  setCantidadKg:         (cantidad: string) => void;
   resetDiagnostico:      () => void;
 };
 
@@ -49,13 +47,11 @@ export const useUsuarioStore = create<UsuarioState>()(
       municipio:          '',
       nivelExperiencia:   'principiante',
       herramientas:       [],
-      cantidadKg:         '',
 
-      setOnboardingCompleto: (valor)      => set({ onboardingCompleto: valor }),
-      setNombre:             (nombre)     => set({ nombre }),
-      setMunicipio:          (municipio)  => set({ municipio }),
-      setNivelExperiencia:   (nivel)      => set({ nivelExperiencia: nivel }),
-      setCantidadKg:         (cantidadKg) => set({ cantidadKg }),
+      setOnboardingCompleto: (valor)     => set({ onboardingCompleto: valor }),
+      setNombre:             (nombre)    => set({ nombre }),
+      setMunicipio:          (municipio) => set({ municipio }),
+      setNivelExperiencia:   (nivel)     => set({ nivelExperiencia: nivel }),
 
       toggleHerramienta: (herramienta) =>
         set((state) => ({
@@ -65,7 +61,7 @@ export const useUsuarioStore = create<UsuarioState>()(
         })),
 
       resetDiagnostico: () =>
-        set({ onboardingCompleto: false, nivelExperiencia: 'principiante', herramientas: [], cantidadKg: '' }),
+        set({ onboardingCompleto: false, nivelExperiencia: 'principiante', herramientas: [] }),
     }),
     {
       name: 'usuario-storage',

@@ -38,7 +38,6 @@ export default function Perfil() {
     municipio, setMunicipio,
     herramientas, toggleHerramienta,
     nivelExperiencia, setNivelExperiencia,
-    cantidadKg, setCantidadKg,
     resetDiagnostico,
   } = useUsuarioStore();
 
@@ -91,21 +90,6 @@ export default function Perfil() {
               />
             </View>
           </View>
-        </View>
-
-        {/* Cantidad disponible */}
-        <View className="bg-white rounded-2xl p-4 mb-4 border border-tierra-200">
-          <Text className="text-carbon font-bold text-sm mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-            ⚖️ Cantidad disponible (kg)
-          </Text>
-          <TextInput
-            className="bg-tierra-50 border border-tierra-200 rounded-xl px-4 py-3 text-carbon text-sm"
-            placeholder="Ej: 50"
-            placeholderTextColor="#a8a098"
-            keyboardType="numeric"
-            value={cantidadKg}
-            onChangeText={setCantidadKg}
-          />
         </View>
 
         {/* Herramientas */}

@@ -10,7 +10,6 @@ import * as Speech from 'expo-speech';
 import { db } from '@/db/client';
 import { productos, insumos, pasos, parametrosCalidad, normas } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { useUsuarioStore } from '@/store/usuario';
 
 // ─── Tipos ───────────────────────────────────────────────────────────────────
 
@@ -90,7 +89,6 @@ const COMERCIAL_TIPS = [
 
 export default function ProductoDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { cantidadKg } = useUsuarioStore();
   const [tab, setTab] = useState<Tab>('formulacion');
   const [producto, setProducto] = useState<typeof productos.$inferSelect | null>(null);
   const [listaInsumos, setListaInsumos] = useState<(typeof insumos.$inferSelect)[]>([]);
@@ -100,7 +98,7 @@ export default function ProductoDetalle() {
 
   // ScaleAdjuster — inicia con la cantidad configurada en el perfil si existe
   const [escalaAbierta, setEscalaAbierta] = useState(false);
-  const [cantidadDeseada, setCantidadDeseada] = useState(cantidadKg ?? '');
+  const [cantidadDeseada, setCantidadDeseada] = useState('');
 
   // AudioReader
   const [leyendo, setLeyendo] = useState(false);
