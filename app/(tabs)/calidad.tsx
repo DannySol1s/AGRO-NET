@@ -34,8 +34,8 @@ const SECCIONES: Seccion[] = [
     preguntas: [
       {
         pregunta: '¿Cuándo se deben lavar las manos durante el proceso?',
-        opciones: ['Solo al inicio', 'Antes y después de cada etapa crítica', 'Solo cuando estén sucias'],
-        correcta: 1,
+        opciones: ['Antes y después de cada etapa crítica', 'Solo al inicio', 'Solo cuando estén sucias'],
+        correcta: 0,
         explicacion: 'Deben lavarse antes y después de cada etapa crítica, especialmente al cambiar entre materias crudas y procesadas.',
       },
       {
@@ -46,14 +46,14 @@ const SECCIONES: Seccion[] = [
       },
       {
         pregunta: '¿Qué hacer si tienes una herida abierta en la mano?',
-        opciones: ['Usar guante y seguir trabajando', 'No procesar alimentos ese día', 'Lavar bien y continuar'],
-        correcta: 1,
+        opciones: ['Usar guante y seguir trabajando', 'Lavar bien y continuar', 'No procesar alimentos ese día'],
+        correcta: 2,
         explicacion: 'Una herida abierta es fuente de microorganismos. No se deben procesar alimentos hasta que sane.',
       },
       {
         pregunta: '¿Con qué frecuencia se deben desinfectar las superficies de trabajo?',
-        opciones: ['Una vez al día al terminar', 'Antes de iniciar y después de cada lote', 'Solo cuando se vean sucias'],
-        correcta: 1,
+        opciones: ['Antes de iniciar y después de cada lote', 'Una vez al día al terminar', 'Solo cuando se vean sucias'],
+        correcta: 0,
         explicacion: 'Las superficies deben desinfectarse antes de iniciar y entre cada lote para evitar contaminación cruzada.',
       },
       {
@@ -77,14 +77,14 @@ const SECCIONES: Seccion[] = [
     preguntas: [
       {
         pregunta: '¿A qué temperatura mínima se pasteuriza una mermelada?',
-        opciones: ['60°C por 5 minutos', '85–100°C por 15–20 minutos', 'Temperatura ambiente'],
-        correcta: 1,
+        opciones: ['60°C por 5 minutos', 'Temperatura ambiente', '85–100°C por 15–20 minutos'],
+        correcta: 2,
         explicacion: 'La pasteurización requiere 85–100°C por 15–20 minutos para eliminar microorganismos y crear el vacío de sellado.',
       },
       {
         pregunta: '¿Por qué no se deben mezclar utensilios de crudos y cocidos?',
-        opciones: ['Por ahorro de agua al lavar', 'Para evitar contaminación cruzada de bacterias', 'Es solo una tradición'],
-        correcta: 1,
+        opciones: ['Para evitar contaminación cruzada de bacterias', 'Por ahorro de agua al lavar', 'Es solo una tradición'],
+        correcta: 0,
         explicacion: 'Los utensilios de crudos pueden tener bacterias que al contacto con el producto cocido lo contaminan.',
       },
       {
@@ -95,14 +95,14 @@ const SECCIONES: Seccion[] = [
       },
       {
         pregunta: '¿Qué información mínima debe llevar un registro de lote?',
-        opciones: ['Solo el nombre del producto', 'Fecha, nombre del producto, cantidad producida y vencimiento', 'Solo la fecha'],
-        correcta: 1,
+        opciones: ['Solo el nombre del producto', 'Solo la fecha', 'Fecha, nombre del producto, cantidad producida y vencimiento'],
+        correcta: 2,
         explicacion: 'El registro de lote debe incluir fecha, nombre, cantidad y vencimiento para garantizar la trazabilidad del producto.',
       },
       {
         pregunta: '¿Por qué se esterilizan los frascos antes de envasar?',
-        opciones: ['Para que el vidrio no se fracture por el calor', 'Para eliminar microorganismos que causarían deterioro', 'Para que el producto no se pegue'],
-        correcta: 1,
+        opciones: ['Para eliminar microorganismos que causarían deterioro', 'Para que el vidrio no se fracture por el calor', 'Para que el producto no se pegue'],
+        correcta: 0,
         explicacion: 'La esterilización elimina microorganismos presentes en el frasco que podrían contaminar el producto final.',
       },
     ],
@@ -126,14 +126,14 @@ const SECCIONES: Seccion[] = [
       },
       {
         pregunta: '¿Cuál es la condición ideal para almacenar conservas?',
-        opciones: ['Lugar húmedo y cálido', 'Lugar fresco, seco y sin luz solar directa', 'Bajo el sol para que dure más'],
-        correcta: 1,
+        opciones: ['Lugar húmedo y cálido', 'Bajo el sol para que dure más', 'Lugar fresco, seco y sin luz solar directa'],
+        correcta: 2,
         explicacion: 'El calor y la humedad aceleran el deterioro. Un lugar fresco, seco y oscuro prolonga la vida útil.',
       },
       {
         pregunta: '¿Con qué NO se deben almacenar productos alimenticios?',
-        opciones: ['Con otros alimentos del mismo tipo', 'Con productos de limpieza o químicos', 'Con empaques sellados'],
-        correcta: 1,
+        opciones: ['Con productos de limpieza o químicos', 'Con otros alimentos del mismo tipo', 'Con empaques sellados'],
+        correcta: 0,
         explicacion: 'Los químicos y productos de limpieza pueden contaminar los alimentos por vapores o derrames accidentales.',
       },
       {
@@ -144,8 +144,8 @@ const SECCIONES: Seccion[] = [
       },
       {
         pregunta: '¿Qué tipo de recipiente es mejor para almacenar alimentos procesados?',
-        opciones: ['Cualquier bolsa de plástico', 'Vidrio o plástico hermético apto para alimentos', 'Latas sin sellar'],
-        correcta: 1,
+        opciones: ['Cualquier bolsa de plástico', 'Latas sin sellar', 'Vidrio o plástico hermético apto para alimentos'],
+        correcta: 2,
         explicacion: 'El vidrio y el plástico certificado para alimentos no transfieren sabores ni sustancias dañinas al producto.',
       },
     ],
@@ -163,14 +163,14 @@ const SECCIONES: Seccion[] = [
     preguntas: [
       {
         pregunta: '¿Cuál es un buen uso para las cáscaras de frutas sobrantes?',
-        opciones: ['Desecharlas a la basura', 'Convertirlas en harina deshidratada o compost', 'Guardarlas sin procesar'],
-        correcta: 1,
+        opciones: ['Convertirlas en harina deshidratada o compost', 'Desecharlas a la basura', 'Guardarlas sin procesar'],
+        correcta: 0,
         explicacion: 'Las cáscaras deshidratadas y molidas pueden venderse como harina nutritiva o usarse como abono.',
       },
       {
         pregunta: '¿Para qué sirven los líquidos de cocción sobrantes?',
-        opciones: ['Solo para tirarlos', 'Como base para caldos, bebidas fermentadas o jarabes', 'Para limpiar utensilios'],
-        correcta: 1,
+        opciones: ['Solo para tirarlos', 'Para limpiar utensilios', 'Como base para caldos, bebidas fermentadas o jarabes'],
+        correcta: 2,
         explicacion: 'Los líquidos de cocción contienen minerales y azúcares aprovechables como base de bebidas o caldos.',
       },
       {
@@ -181,14 +181,14 @@ const SECCIONES: Seccion[] = [
       },
       {
         pregunta: '¿Qué beneficio aporta el compost de residuos orgánicos a la parcela?',
-        opciones: ['Ninguno, es solo basura orgánica', 'Mejora la fertilidad y estructura del suelo', 'Solo sirve para cubrir malas hierbas'],
-        correcta: 1,
+        opciones: ['Mejora la fertilidad y estructura del suelo', 'Ninguno, es solo basura orgánica', 'Solo sirve para cubrir malas hierbas'],
+        correcta: 0,
         explicacion: 'El compost orgánico enriquece el suelo con nutrientes y mejora su capacidad de retener agua.',
       },
       {
         pregunta: '¿Cuál es la mejor práctica antes de desechar un subproducto?',
-        opciones: ['Tirarlo inmediatamente para no acumular basura', 'Investigar si tiene algún uso alternativo o comercial', 'Quemarlo para evitar plagas'],
-        correcta: 1,
+        opciones: ['Tirarlo inmediatamente para no acumular basura', 'Quemarlo para evitar plagas', 'Investigar si tiene algún uso alternativo o comercial'],
+        correcta: 2,
         explicacion: 'Muchos subproductos tienen valor económico. Investigar antes de desechar puede abrir nuevas fuentes de ingreso.',
       },
     ],
