@@ -52,7 +52,7 @@ export default function Bienvenida() {
       {/* CTA */}
       <View className="px-6 pb-8">
         <Pressable
-          onPress={() => router.push('/diagnostico')}
+          onPress={() => router.replace('/diagnostico')}
           className="bg-verde-700 rounded-2xl py-4 items-center active:opacity-80"
         >
           <Text className="text-white text-base font-bold">Iniciar Plataforma ✨</Text>
