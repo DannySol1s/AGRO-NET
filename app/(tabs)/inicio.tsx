@@ -1,11 +1,13 @@
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import { useState, useEffect, useMemo } from 'react';
+import { View, Text, ScrollView, Pressable, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Alert } from 'react-native';
 import {
   Box, FlaskConical, Calculator, Users, BookOpen,
-  Bell, Mic, ChevronRight,
+  Bell, Mic, ChevronRight, Search, X,
 } from 'lucide-react-native';
+import { db } from '@/db/client';
+import { productos, materiasPrimas } from '@/db/schema';
 
 type MenuItem = {
   icon: React.ComponentType<{ size: number; stroke: string }>;
@@ -52,7 +54,46 @@ function handleNav(item: MenuItem) {
   router.push(item.ruta as any);
 }
 
+type ResultadoBusqueda = {
+  tipo: 'producto' | 'materia';
+  id: string;
+  nombre: string;
+  subtitulo: string;
+};
+
 export default function Inicio() {
+  const [busqueda, setBusqueda] = useState('');
+  const [todosProductos, setTodosProductos] = useState<{ id: string; nombre: string; materiaPrimaId: string }[]>([]);
+  const [todasMaterias, setTodasMaterias] = useState<{ id: string; nombre: string; emoji: string }[]>([]);
+
+  useEffect(() => {
+    db.select({ id: productos.id, nombre: productos.nombre, materiaPrimaId: productos.materiaPrimaId })
+      .from(productos).then(setTodosProductos);
+    db.select({ id: materiasPrimas.id, nombre: materiasPrimas.nombre, emoji: materiasPrimas.emoji })
+      .from(materiasPrimas).then(setTodasMaterias);
+  }, []);
+
+  const resultados = useMemo((): ResultadoBusqueda[] => {
+    const q = busqueda.trim().toLowerCase();
+    if (!q) return [];
+    const materiaMap = Object.fromEntries(todasMaterias.map((m) => [m.id, m.nombre]));
+    const prods = todosProductos
+      .filter((p) => p.nombre.toLowerCase().includes(q) || materiaMap[p.materiaPrimaId]?.toLowerCase().includes(q))
+      .slice(0, 4)
+      .map((p) => ({ tipo: 'producto' as const, id: p.id, nombre: p.nombre, subtitulo: materiaMap[p.materiaPrimaId] ?? '' }));
+    const mats = todasMaterias
+      .filter((m) => m.nombre.toLowerCase().includes(q))
+      .slice(0, 3)
+      .map((m) => ({ tipo: 'materia' as const, id: m.id, nombre: `${m.emoji} ${m.nombre}`, subtitulo: 'Materia prima' }));
+    return [...mats, ...prods];
+  }, [busqueda, todosProductos, todasMaterias]);
+
+  function irA(r: ResultadoBusqueda) {
+    setBusqueda('');
+    if (r.tipo === 'producto') router.push(`/(tabs)/materias/producto/${r.id}` as any);
+    else router.push(`/(tabs)/materias/${r.id}` as any);
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-tierra-50" edges={['top']}>
       {/* ── HEADER ─────────────────────────────── */}
@@ -97,8 +138,51 @@ export default function Inicio() {
           </Text>
         </View>
 
+        {/* ── BUSCADOR GLOBAL ─────────────────────── */}
+        <View className="px-4 -mt-5 mb-1">
+          <View className="bg-white rounded-2xl border border-tierra-200 flex-row items-center px-3 py-2.5 gap-2"
+            style={{ shadowColor: '#1F3D36', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}
+          >
+            <Search size={18} stroke="#84a681" />
+            <TextInput
+              className="flex-1 text-sm text-carbon"
+              placeholder="Buscar productos o materias primas..."
+              placeholderTextColor="#a8a098"
+              value={busqueda}
+              onChangeText={setBusqueda}
+              style={{ fontFamily: 'Poppins_400Regular' }}
+            />
+            {busqueda.length > 0 && (
+              <Pressable onPress={() => setBusqueda('')}>
+                <X size={16} stroke="#a8a098" />
+              </Pressable>
+            )}
+          </View>
+
+          {resultados.length > 0 && (
+            <View className="bg-white rounded-2xl border border-tierra-200 mt-1 overflow-hidden"
+              style={{ shadowColor: '#1F3D36', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}
+            >
+              {resultados.map((r, i) => (
+                <Pressable
+                  key={`${r.tipo}-${r.id}`}
+                  onPress={() => irA(r)}
+                  className={`flex-row items-center px-4 py-3 gap-3 active:bg-tierra-50 ${i > 0 ? 'border-t border-tierra-100' : ''}`}
+                >
+                  <Text className="text-base">{r.tipo === 'materia' ? '🌿' : '🧪'}</Text>
+                  <View className="flex-1">
+                    <Text className="text-carbon text-sm font-semibold">{r.nombre}</Text>
+                    <Text className="text-tierra-500 text-xs">{r.subtitulo}</Text>
+                  </View>
+                  <ChevronRight size={14} stroke="#a8a098" />
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </View>
+
         {/* ── GRID PRINCIPAL ──────────────────────── */}
-        <View className="px-4 -mt-4">
+        <View className="px-4 mt-3">
           <View className="flex-row flex-wrap gap-3">
             {GRID.map((item) => {
               const Icon = item.icon;
