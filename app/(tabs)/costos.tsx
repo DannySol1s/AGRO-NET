@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, Share, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ChevronLeft, Trash2, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react-native';
+import { ArrowLeft, Trash2, ChevronDown, ChevronUp, RotateCcw, Sprout, Package, HandCoins, Flame, Truck, TrendingDown, Ellipsis, Receipt, Save, Share2, History, CheckCircle2 } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { calculos } from '@/db/schema';
 import { desc, eq } from 'drizzle-orm';
@@ -10,40 +10,33 @@ import { calcularRango, formatMXN } from '@/services/calculadora';
 
 type Campos = {
   productoNombre: string;
-  materiaPrima:   string;
-  empaque:        string;
-  manoObra:       string;
-  gasAgua:        string;
-  transporte:     string;
-  merma:          string;
-  otrosGastos:    string;
-  unidades:       string;
-  tamanoUnidad:   string; // g o ml por unidad
-  margen:         string; // porcentaje elegido por el productor
+  materiaPrima: string; empaque: string; manoObra: string;
+  gasAgua: string; transporte: string; merma: string; otrosGastos: string;
+  unidades: string; tamanoUnidad: string; margen: string;
 };
 
 type Calculo = typeof calculos.$inferSelect;
-
-const MARGENES = ['20', '30', '40', '50', '60', '80'];
-
-const CAMPOS_COSTO: { campo: keyof Omit<Campos, 'productoNombre' | 'unidades' | 'tamanoUnidad' | 'margen'>; label: string; placeholder: string }[] = [
-  { campo: 'materiaPrima', label: 'Materia prima e ingredientes ($)',  placeholder: '0' },
-  { campo: 'empaque',      label: 'Empaque y etiquetas ($)',           placeholder: '0' },
-  { campo: 'manoObra',     label: 'Mano de obra ($)',                  placeholder: '0' },
-  { campo: 'gasAgua',      label: 'Gas / leña / agua ($)',             placeholder: '0' },
-  { campo: 'transporte',   label: 'Transporte para vender ($)',        placeholder: '0' },
-  { campo: 'merma',        label: 'Pérdidas por merma ($)',            placeholder: '0' },
-  { campo: 'otrosGastos',  label: 'Otros gastos fijos ($)',            placeholder: '0' },
-];
-
-function parse(v: string): number { return parseFloat(v) || 0; }
 
 const CAMPOS_VACIO: Campos = {
   productoNombre: '',
   materiaPrima: '', empaque: '', manoObra: '',
   gasAgua: '', transporte: '', merma: '', otrosGastos: '',
-  unidades: '', tamanoUnidad: '', margen: '50',
+  unidades: '', tamanoUnidad: '', margen: '40',
 };
+
+const CAMPOS_COSTO: { campo: keyof Omit<Campos, 'productoNombre'|'unidades'|'tamanoUnidad'|'margen'>; label: string; Icon: any }[] = [
+  { campo: 'materiaPrima', label: 'Materia prima',  Icon: Sprout      },
+  { campo: 'empaque',      label: 'Empaque',         Icon: Package     },
+  { campo: 'manoObra',     label: 'Mano de obra',    Icon: HandCoins   },
+  { campo: 'gasAgua',      label: 'Gas / agua / luz', Icon: Flame      },
+  { campo: 'transporte',   label: 'Transporte',      Icon: Truck       },
+  { campo: 'merma',        label: 'Merma',            Icon: TrendingDown},
+  { campo: 'otrosGastos',  label: 'Otros gastos',    Icon: Ellipsis    },
+];
+
+const MARGENES = ['20', '30', '40', '50', '60', '80'];
+
+function parse(v: string) { return parseFloat(v) || 0; }
 
 export default function Costos() {
   const [campos, setCampos] = useState<Campos>(CAMPOS_VACIO);
@@ -58,13 +51,10 @@ export default function Costos() {
   useEffect(() => { cargarHistorial(); }, [cargarHistorial]);
 
   function set(campo: keyof Campos) {
-    return (v: string) => setCampos((prev) => ({ ...prev, [campo]: v }));
+    return (v: string) => setCampos((p) => ({ ...p, [campo]: v }));
   }
 
-  const costoTotal =
-    parse(campos.materiaPrima) + parse(campos.empaque) + parse(campos.manoObra) +
-    parse(campos.gasAgua) + parse(campos.transporte) + parse(campos.merma) + parse(campos.otrosGastos);
-
+  const costoTotal = CAMPOS_COSTO.reduce((s, { campo }) => s + parse(campos[campo]), 0);
   const unidades = parse(campos.unidades);
   const tamano   = parse(campos.tamanoUnidad);
   const margen   = parse(campos.margen);
@@ -73,6 +63,8 @@ export default function Costos() {
     ? calcularRango(costoTotal, unidades, margen, tamano)
     : null;
 
+  const mxn = formatMXN;
+
   async function guardar() {
     if (!resultado) return;
     if (!campos.productoNombre.trim()) {
@@ -80,15 +72,15 @@ export default function Costos() {
       return;
     }
     await db.insert(calculos).values({
-      fecha:             new Date().toISOString(),
-      productoNombre:    campos.productoNombre.trim(),
-      costoTotal:        resultado.costoTotal,
-      unidades:          resultado.unidadesPorLote,
-      margenPct:         margen,
-      precioMinimo:      resultado.precioMinimo,
+      fecha: new Date().toISOString(),
+      productoNombre: campos.productoNombre.trim(),
+      costoTotal: resultado.costoTotal,
+      unidades: resultado.unidadesPorLote,
+      margenPct: margen,
+      precioMinimo: resultado.precioMinimo,
       precioRecomendado: resultado.precioRecomendado,
-      precioMaximo:      resultado.precioMaximo,
-      tamanoUnidadG:     tamano > 0 ? tamano : null,
+      precioMaximo: resultado.precioMaximo,
+      tamanoUnidadG: tamano > 0 ? tamano : null,
     });
     await cargarHistorial();
     Alert.alert('Guardado', 'El cálculo quedó en el historial.');
@@ -96,17 +88,9 @@ export default function Costos() {
 
   async function compartir() {
     if (!resultado) return;
-    const nombre = campos.productoNombre.trim() || 'Mi producto';
+    const nombre = campos.productoNombre.trim() || 'Producto';
     const texto =
-      `📊 Cálculo AGRO-NET\n` +
-      `Producto: ${nombre}\n` +
-      `Costo total: ${formatMXN(resultado.costoTotal)}\n` +
-      `Unidades: ${resultado.unidadesPorLote}\n\n` +
-      `💰 Rango de precios por unidad:\n` +
-      `  Mínimo:       ${formatMXN(resultado.precioMinimo)}\n` +
-      `  Recomendado:  ${formatMXN(resultado.precioRecomendado)}  ✅\n` +
-      `  Máximo:       ${formatMXN(resultado.precioMaximo)}\n\n` +
-      `Ganancia estimada: ${formatMXN(resultado.gananciaNeta)}`;
+      `📊 Cálculo AGRO-NET\nProducto: ${nombre}\nCosto total: ${mxn(resultado.costoTotal)}\nUnidades: ${resultado.unidadesPorLote}\n\n💰 Rango de precios:\n  Mínimo:      ${mxn(resultado.precioMinimo)}\n  Recomendado: ${mxn(resultado.precioRecomendado)} ✅\n  Máximo:      ${mxn(resultado.precioMaximo)}\nGanancia: ${mxn(resultado.gananciaNeta)}`;
     await Share.share({ message: texto });
   }
 
@@ -117,249 +101,218 @@ export default function Costos() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
+
       {/* Header */}
-      <View className="bg-verde-800 px-6 pt-4 pb-5">
-        <Pressable onPress={() => router.back()} className="mb-3 self-start">
-          <ChevronLeft size={24} stroke="#d6e2d4" />
-        </Pressable>
-        <View className="flex-row items-center gap-3">
-          <View className="bg-verde-700 rounded-xl p-2">
-            <Text className="text-xl">💰</Text>
-          </View>
-          <View>
-            <Text className="text-white text-lg font-bold" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-              Calculadora de Costos
-            </Text>
-            <Text className="text-verde-300 text-xs">Costos, rendimientos y rentabilidad</Text>
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Pressable onPress={() => router.back()} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
+          </Pressable>
+          <Text style={{ fontSize: 22, lineHeight: 26 }}>💰</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#F4F1EA', fontSize: 18, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Calculadora de Costos</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300' }}>Precio justo para tu producto</Text>
           </View>
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-5" showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 32 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
-        {/* Nombre del producto */}
-        <View className="mb-4">
-          <Text className="text-carbon text-sm font-bold mb-2" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-            Nombre del producto
-          </Text>
+        {/* Nombre */}
+        <View style={{ backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, marginBottom: 16 }}>
+          <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '500', marginBottom: 8, fontFamily: 'Poppins_500Medium' }}>Nombre del producto</Text>
           <TextInput
-            className="bg-white border border-tierra-200 rounded-xl px-4 py-3 text-carbon text-sm"
-            placeholder="Ej: Mermelada de Carambola"
-            placeholderTextColor="#a8a098"
             value={campos.productoNombre}
             onChangeText={set('productoNombre')}
+            placeholder="Ej: Mermelada de carambola 250 g"
+            placeholderTextColor="#9A917F"
+            style={{ backgroundColor: '#D8D2C8', borderRadius: 12, paddingHorizontal: 14, height: 46, borderWidth: 1, borderColor: '#B0A897', fontSize: 15, color: '#1A1A1A', fontFamily: 'Poppins_400Regular' }}
           />
         </View>
 
-        {/* Costos */}
-        <View className="flex-row items-center justify-between mb-3">
-          <Text className="text-carbon text-sm font-bold" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-            Costos de producción
-          </Text>
-          <Pressable
-            onPress={() => setCampos(CAMPOS_VACIO)}
-            className="flex-row items-center gap-1.5 bg-tierra-100 px-3 py-1.5 rounded-xl active:opacity-70"
-          >
-            <RotateCcw size={13} stroke="#5c5248" />
-            <Text className="text-tierra-700 text-xs font-semibold">Limpiar todo</Text>
+        {/* Costos de producción */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '600', letterSpacing: 0.6, textTransform: 'uppercase', fontFamily: 'Poppins_600SemiBold' }}>Costos de producción</Text>
+          <Pressable onPress={() => setCampos(CAMPOS_VACIO)} style={{ flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: '#C1BAAE', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 6 }}>
+            <RotateCcw size={13} color="#9E5A38" strokeWidth={2} />
+            <Text style={{ color: '#9E5A38', fontSize: 11.5, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>Limpiar todo</Text>
           </Pressable>
         </View>
-        <View className="gap-3 mb-4">
-          {CAMPOS_COSTO.map(({ campo, label, placeholder }) => (
-            <View key={campo}>
-              <Text className="text-tierra-700 text-xs mb-1.5">{label}</Text>
-              <TextInput
-                className="bg-white border border-tierra-200 rounded-xl px-4 py-3 text-carbon text-sm"
-                placeholder={placeholder}
-                placeholderTextColor="#a8a098"
-                keyboardType="numeric"
-                value={campos[campo]}
-                onChangeText={set(campo)}
-              />
+
+        <View style={{ gap: 8, marginBottom: 4 }}>
+          {CAMPOS_COSTO.map(({ campo, label, Icon }) => (
+            <View key={campo} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#C1BAAE', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 10 }}>
+              <Icon size={18} color="#465D43" strokeWidth={1.8} />
+              <Text style={{ color: '#1A1A1A', fontSize: 13.5, fontWeight: '500', flex: 1, fontFamily: 'Poppins_500Medium' }}>{label}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#D8D2C8', borderRadius: 12, paddingHorizontal: 12, borderWidth: 1, borderColor: campos[campo] ? '#465D43' : '#B0A897', width: 104, height: 40 }}>
+                <Text style={{ color: '#4A4A4A', fontSize: 13, fontWeight: '500' }}>$</Text>
+                <TextInput
+                  value={campos[campo]}
+                  onChangeText={set(campo)}
+                  keyboardType="decimal-pad"
+                  placeholder="0.00"
+                  placeholderTextColor="#9A917F"
+                  style={{ flex: 1, fontSize: 14, fontWeight: '500', color: '#1A1A1A', textAlign: 'right', paddingRight: 4, fontFamily: 'Poppins_500Medium' }}
+                />
+              </View>
             </View>
           ))}
         </View>
 
-        {/* Costo total banner */}
-        {costoTotal > 0 && (
-          <View className="bg-verde-800 rounded-xl px-4 py-3 mb-4 flex-row justify-between items-center">
-            <Text className="text-verde-200 text-sm">Costo total acumulado:</Text>
-            <Text className="text-white font-bold text-base">{formatMXN(costoTotal)}</Text>
+        {/* Banner costo total */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#465D43', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, marginTop: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Receipt size={20} color="#EAF1E4" strokeWidth={1.8} />
+            <Text style={{ color: '#EAF1E4', fontSize: 13.5, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>Costo total del lote</Text>
+          </View>
+          <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '700', fontFamily: 'Poppins_600SemiBold' }}>{mxn(costoTotal)}</Text>
+        </View>
+
+        {/* Producción */}
+        <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '600', letterSpacing: 0.6, textTransform: 'uppercase', marginTop: 20, marginBottom: 10, fontFamily: 'Poppins_600SemiBold' }}>Producción</Text>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flex: 1, backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 12 }}>
+            <Text style={{ color: '#4A4A4A', fontSize: 11.5, fontWeight: '300', marginBottom: 6 }}>Unidades por lote</Text>
+            <TextInput
+              value={campos.unidades}
+              onChangeText={set('unidades')}
+              keyboardType="number-pad"
+              placeholder="10"
+              placeholderTextColor="#9A917F"
+              style={{ backgroundColor: '#D8D2C8', borderRadius: 12, paddingHorizontal: 12, height: 44, borderWidth: 1, borderColor: '#B0A897', fontSize: 16, fontWeight: '600', color: '#1A1A1A', fontFamily: 'Poppins_600SemiBold' }}
+            />
+          </View>
+          <View style={{ flex: 1, backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 14, paddingVertical: 12 }}>
+            <Text style={{ color: '#4A4A4A', fontSize: 11.5, fontWeight: '300', marginBottom: 6 }}>Tamaño / unidad (opc.)</Text>
+            <View style={{ flexDirection: 'row', gap: 6 }}>
+              <TextInput
+                value={campos.tamanoUnidad}
+                onChangeText={set('tamanoUnidad')}
+                keyboardType="decimal-pad"
+                placeholder="250"
+                placeholderTextColor="#9A917F"
+                style={{ flex: 1, backgroundColor: '#D8D2C8', borderRadius: 12, paddingHorizontal: 12, height: 44, borderWidth: 1, borderColor: '#B0A897', fontSize: 16, fontWeight: '600', color: '#1A1A1A', fontFamily: 'Poppins_600SemiBold' }}
+              />
+            </View>
+          </View>
+        </View>
+        {unidades > 0 && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, paddingHorizontal: 4 }}>
+            <Text style={{ color: '#465D43', fontSize: 12.5, fontWeight: '500' }}>→</Text>
+            <Text style={{ color: '#465D43', fontSize: 12.5, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>
+              {unidades} unidades{tamano ? ` de ${tamano} g` : ''} por lote
+            </Text>
           </View>
         )}
 
-        {/* Unidades y empaque */}
-        <Text className="text-carbon text-sm font-bold mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-          Producción y empaque
-        </Text>
-        <View className="gap-3 mb-4">
-          <View>
-            <Text className="text-tierra-700 text-xs mb-1.5">Unidades totales a producir</Text>
-            <TextInput
-              className="bg-white border border-tierra-200 rounded-xl px-4 py-3 text-carbon text-sm"
-              placeholder="Ej: 40"
-              placeholderTextColor="#a8a098"
-              keyboardType="numeric"
-              value={campos.unidades}
-              onChangeText={set('unidades')}
-            />
-          </View>
-          <View>
-            <Text className="text-tierra-700 text-xs mb-1.5">
-              Tamaño por unidad en gramos o ml <Text className="text-tierra-500">(opcional)</Text>
-            </Text>
-            <TextInput
-              className="bg-white border border-tierra-200 rounded-xl px-4 py-3 text-carbon text-sm"
-              placeholder="Ej: 250 (para frascos de 250 g)"
-              placeholderTextColor="#a8a098"
-              keyboardType="numeric"
-              value={campos.tamanoUnidad}
-              onChangeText={set('tamanoUnidad')}
-            />
-            {tamano > 0 && unidades > 0 && (
-              <Text className="text-verde-700 text-xs mt-1">
-                → {Math.floor((unidades * 1000) / tamano)} unidades de {tamano}g por lote
-              </Text>
-            )}
-          </View>
-        </View>
-
         {/* Margen */}
-        <Text className="text-carbon text-sm font-bold mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-          ¿Cuánto quieres ganar? (% sobre el costo)
-        </Text>
-        <View className="flex-row flex-wrap gap-2 mb-5">
-          {MARGENES.map((m) => (
-            <Pressable
-              key={m}
-              onPress={() => setCampos((p) => ({ ...p, margen: m }))}
-              className={`px-4 py-2.5 rounded-xl border-2 items-center ${
-                campos.margen === m
-                  ? 'bg-verde-800 border-verde-800'
-                  : 'bg-white border-tierra-200'
-              }`}
-            >
-              <Text className={`font-bold text-sm ${campos.margen === m ? 'text-white' : 'text-carbon'}`}>
-                {m}%
-              </Text>
-            </Pressable>
-          ))}
+        <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '600', letterSpacing: 0.6, textTransform: 'uppercase', marginTop: 20, marginBottom: 10, fontFamily: 'Poppins_600SemiBold' }}>Margen de ganancia</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {MARGENES.map((m) => {
+            const on = campos.margen === m;
+            return (
+              <Pressable key={m} onPress={() => setCampos((p) => ({ ...p, margen: m }))}
+                style={{ alignItems: 'center', justifyContent: 'center', borderRadius: 12, paddingVertical: 10, width: 'calc(33.333% - 6px)' as any, backgroundColor: on ? '#9E5A38' : '#C1BAAE', borderWidth: 1, borderColor: on ? '#9E5A38' : '#B0A897', minWidth: 72 }}>
+                <Text style={{ color: on ? '#F6EFE7' : '#1A1A1A', fontSize: 15, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{m}%</Text>
+              </Pressable>
+            );
+          })}
         </View>
 
-        {/* Resultado — Rango de precios */}
+        {/* Resultado */}
         {resultado && (
-          <View className="bg-white rounded-2xl border border-tierra-200 mb-4 overflow-hidden">
-            <View className="bg-verde-800 px-4 py-3">
-              <Text className="text-verde-200 text-xs font-semibold text-center">
-                RANGO DE PRECIOS POR UNIDAD
-              </Text>
+          <View style={{ marginTop: 20 }}>
+            <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '600', letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: 10, fontFamily: 'Poppins_600SemiBold' }}>Rango de precios por unidad</Text>
+            <View style={{ backgroundColor: '#C1BAAE', borderRadius: 16, padding: 6, gap: 2 }}>
+              {/* Mínimo */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 }}>
+                <View>
+                  <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>Precio mínimo</Text>
+                  <Text style={{ color: '#4A4A4A', fontSize: 11, fontWeight: '300' }}>Margen 20%</Text>
+                </View>
+                <Text style={{ color: '#4A4A4A', fontSize: 17, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{mxn(resultado.precioMinimo)}</Text>
+              </View>
+              {/* Recomendado */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#1F3D36', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 14 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <CheckCircle2 size={20} color="#93B36F" strokeWidth={1.9} />
+                  <View>
+                    <Text style={{ color: '#F4F1EA', fontSize: 14, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Recomendado</Text>
+                    <Text style={{ color: '#A7C49A', fontSize: 11, fontWeight: '300' }}>Margen {margen}%</Text>
+                  </View>
+                </View>
+                <Text style={{ color: '#93B36F', fontSize: 24, fontWeight: '700', fontFamily: 'Poppins_600SemiBold' }}>{mxn(resultado.precioRecomendado)}</Text>
+              </View>
+              {/* Máximo */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 }}>
+                <View>
+                  <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>Precio máximo</Text>
+                  <Text style={{ color: '#4A4A4A', fontSize: 11, fontWeight: '300' }}>Margen 100%</Text>
+                </View>
+                <Text style={{ color: '#4A4A4A', fontSize: 17, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{mxn(resultado.precioMaximo)}</Text>
+              </View>
             </View>
 
-            <View className="p-4 gap-3">
-              {/* Mínimo */}
-              <View className="flex-row justify-between items-center bg-tierra-50 rounded-xl px-4 py-3">
-                <View>
-                  <Text className="text-tierra-700 text-xs">Precio mínimo</Text>
-                  <Text className="text-tierra-500 text-xs">Margen 20% — punto de equilibrio</Text>
-                </View>
-                <Text className="text-tierra-800 font-bold text-base">{formatMXN(resultado.precioMinimo)}</Text>
+            {/* Ganancia + unidades */}
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+              <View style={{ flex: 1, backgroundColor: '#465D43', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12 }}>
+                <Text style={{ color: '#CFE0C5', fontSize: 11, fontWeight: '300' }}>Ganancia estimada</Text>
+                <Text style={{ color: '#FFFFFF', fontSize: 19, fontWeight: '600', marginTop: 2, fontFamily: 'Poppins_600SemiBold' }}>{mxn(resultado.gananciaNeta)}</Text>
               </View>
-
-              {/* Recomendado */}
-              <View className="flex-row justify-between items-center bg-verde-100 rounded-xl px-4 py-3 border-2 border-verde-500">
-                <View>
-                  <Text className="text-verde-800 text-xs font-bold">✅ Precio recomendado</Text>
-                  <Text className="text-verde-600 text-xs">Margen {margen}% — tu elección</Text>
-                </View>
-                <Text className="text-verde-800 font-bold text-lg">{formatMXN(resultado.precioRecomendado)}</Text>
-              </View>
-
-              {/* Máximo */}
-              <View className="flex-row justify-between items-center bg-cosecha-400 bg-opacity-10 rounded-xl px-4 py-3">
-                <View>
-                  <Text className="text-cosecha-500 text-xs font-bold">Precio máximo</Text>
-                  <Text className="text-cosecha-400 text-xs">Margen 100% — techo de mercado</Text>
-                </View>
-                <Text className="text-cosecha-500 font-bold text-base">{formatMXN(resultado.precioMaximo)}</Text>
-              </View>
-
-              <View className="h-px bg-tierra-100" />
-
-              <View className="flex-row justify-between">
-                <Text className="text-tierra-600 text-sm">Ganancia estimada (con precio rec.):</Text>
-                <Text className="text-verde-700 font-bold text-sm">{formatMXN(resultado.gananciaNeta)}</Text>
-              </View>
-              <View className="flex-row justify-between">
-                <Text className="text-tierra-600 text-sm">Unidades del lote:</Text>
-                <Text className="text-carbon font-semibold text-sm">{resultado.unidadesPorLote}</Text>
+              <View style={{ backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ color: '#9E5A38', fontSize: 19, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{resultado.unidadesPorLote}</Text>
+                <Text style={{ color: '#4A4A4A', fontSize: 10.5, fontWeight: '300' }}>unidades</Text>
               </View>
             </View>
 
             {/* Acciones */}
-            <View className="flex-row border-t border-tierra-100">
-              <Pressable
-                onPress={guardar}
-                className="flex-1 py-3.5 items-center border-r border-tierra-100 active:bg-tierra-50"
-              >
-                <Text className="text-verde-700 font-semibold text-sm">💾 Guardar</Text>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+              <Pressable onPress={guardar} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#9E5A38', borderRadius: 16, paddingVertical: 14 }}>
+                <Save size={18} color="#F7F2EC" strokeWidth={1.9} />
+                <Text style={{ color: '#F7F2EC', fontSize: 14, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Guardar</Text>
               </Pressable>
-              <Pressable
-                onPress={compartir}
-                className="flex-1 py-3.5 items-center active:bg-tierra-50"
-              >
-                <Text className="text-cosecha-500 font-semibold text-sm">📤 Compartir</Text>
+              <Pressable onPress={compartir} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#1F3D36', borderRadius: 16, paddingVertical: 14 }}>
+                <Share2 size={18} color="#93B36F" strokeWidth={1.9} />
+                <Text style={{ color: '#F4F1EA', fontSize: 14, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Compartir</Text>
               </Pressable>
             </View>
           </View>
         )}
 
         {/* Historial */}
-        {historial.length > 0 && (
-          <View className="mb-6">
-            <Pressable
-              onPress={() => setMostrarHistorial((v) => !v)}
-              className="flex-row items-center justify-between py-3"
-            >
-              <Text className="text-carbon font-bold text-sm" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-                Cálculos anteriores ({historial.length})
-              </Text>
-              {mostrarHistorial
-                ? <ChevronUp size={18} stroke="#5c5248" />
-                : <ChevronDown size={18} stroke="#5c5248" />
-              }
-            </Pressable>
+        <Pressable onPress={() => setMostrarHistorial((v) => !v)} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24, paddingVertical: 4 }}>
+          <History size={17} color="#9E5A38" strokeWidth={1.9} />
+          <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '600', flex: 1, letterSpacing: 0.5, textTransform: 'uppercase', fontFamily: 'Poppins_600SemiBold' }}>
+            Historial ({historial.length})
+          </Text>
+          {mostrarHistorial
+            ? <ChevronUp size={18} color="#4A4A4A" strokeWidth={2} />
+            : <ChevronDown size={18} color="#4A4A4A" strokeWidth={2} />
+          }
+        </Pressable>
 
-            {mostrarHistorial && historial.map((c) => (
-              <View key={c.id} className="bg-white rounded-xl p-4 mb-2 border border-tierra-200">
-                <View className="flex-row justify-between items-start mb-2">
-                  <View className="flex-1">
-                    <Text className="text-carbon font-semibold text-sm">{c.productoNombre}</Text>
-                    <Text className="text-tierra-500 text-xs">{new Date(c.fecha).toLocaleDateString('es-MX')}</Text>
+        {mostrarHistorial && (
+          <View style={{ marginTop: 10, gap: 8 }}>
+            {historial.length === 0 ? (
+              <View style={{ backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16 }}>
+                <Text style={{ color: '#4A4A4A', fontSize: 12.5, fontWeight: '300' }}>Aún no has guardado ningún cálculo.</Text>
+              </View>
+            ) : historial.map((c) => (
+              <View key={c.id} style={{ backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: '#1A1A1A', fontSize: 14, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{c.productoNombre}</Text>
+                    <Text style={{ color: '#4A4A4A', fontSize: 11, fontWeight: '300' }}>{new Date(c.fecha).toLocaleDateString('es-MX')} · mín {mxn(c.precioMinimo)} · rec {mxn(c.precioRecomendado)} · máx {mxn(c.precioMaximo)}</Text>
                   </View>
-                  <Pressable onPress={() => eliminarCalculo(c.id)} className="p-1 active:opacity-60">
-                    <Trash2 size={16} stroke="#a8a098" />
+                  <Pressable onPress={() => eliminarCalculo(c.id)} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: '#D8D2C8', alignItems: 'center', justifyContent: 'center' }}>
+                    <Trash2 size={17} color="#9E5A38" strokeWidth={1.9} />
                   </Pressable>
-                </View>
-                <View className="flex-row gap-3">
-                  <View className="flex-1 bg-tierra-50 rounded-lg p-2 items-center">
-                    <Text className="text-tierra-500 text-xs">Mínimo</Text>
-                    <Text className="text-tierra-800 font-bold text-xs">{formatMXN(c.precioMinimo)}</Text>
-                  </View>
-                  <View className="flex-1 bg-verde-100 rounded-lg p-2 items-center">
-                    <Text className="text-verde-700 text-xs">Recomendado</Text>
-                    <Text className="text-verde-800 font-bold text-xs">{formatMXN(c.precioRecomendado)}</Text>
-                  </View>
-                  <View className="flex-1 bg-tierra-50 rounded-lg p-2 items-center">
-                    <Text className="text-tierra-500 text-xs">Máximo</Text>
-                    <Text className="text-tierra-800 font-bold text-xs">{formatMXN(c.precioMaximo)}</Text>
-                  </View>
                 </View>
               </View>
             ))}
           </View>
         )}
 
-        <View className="h-8" />
       </ScrollView>
     </SafeAreaView>
   );
