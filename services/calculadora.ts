@@ -61,13 +61,11 @@ export function calcularRango(
   const precioMinimo      = costoPorUnidad * 1.20;  // mínimo 20%
   const precioRecomendado = costoPorUnidad * (1 + margenElegido / 100);
   const precioMaximo      = costoPorUnidad * 2.00;  // máximo 100%
-  const gananciaNeta      = (precioRecomendado - costoPorUnidad) * unidades;
+  const gananciaNeta = (precioRecomendado - costoPorUnidad) * unidades;
 
-  // Si el productor indicó tamaño de empaque, calcular unidades reales por lote
-  // Ejemplo: 10 kg = 10,000 g ÷ 250 g/frasco = 40 frascos
-  const unidadesPorLote = tamanoUnidadG > 0 && costoTotal > 0
-    ? Math.floor((unidades * 1000) / tamanoUnidadG)
-    : unidades;
+  // unidadesPorLote = las mismas unidades que el productor indicó
+  // tamanoUnidadG es solo informativo (ej: "cada frasco pesa 250g")
+  const unidadesPorLote = unidades;
 
   return {
     costoTotal,
