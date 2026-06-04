@@ -85,11 +85,10 @@ export default function Diagnostico() {
   } = useUsuarioStore();
 
   const canNext =
-    paso === 1
-      ? nombre.trim().length > 0
-      : paso === 3
-        ? !!nivelExperiencia
-        : true;
+    paso === 1 ? nombre.trim().length > 0 && estado.trim().length > 0 && municipio.trim().length > 0
+    : paso === 2 ? herramientas.length > 0
+    : paso === 3 ? !!nivelExperiencia
+    : true;
 
   function avanzar() {
     if (paso < PASOS) setPaso(paso + 1);
@@ -272,6 +271,18 @@ export default function Diagnostico() {
                 nadie.
               </Text>
             </View>
+
+            {/* Indicador de campos faltantes */}
+            {!canNext && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 12, paddingHorizontal: 4 }}>
+                <Text style={{ fontSize: 14 }}>⚠️</Text>
+                <Text style={{ color: '#9E5A38', fontSize: 12, fontWeight: '400', flex: 1, lineHeight: 18 }}>
+                  {!nombre.trim() ? 'Escribe tu nombre para continuar'
+                    : !estado.trim() ? 'Selecciona tu estado'
+                    : 'Selecciona tu municipio'}
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -346,17 +357,17 @@ export default function Diagnostico() {
                 );
               })}
             </View>
-            <Text
-              style={{
-                color: "#4A4A4A",
-                fontSize: 12,
-                fontWeight: "300",
-                marginTop: 16,
-              }}
-            >
-              {herramientas.length} seleccionada
-              {herramientas.length !== 1 ? "s" : ""}
+            <Text style={{ color: '#4A4A4A', fontSize: 12, fontWeight: '300', marginTop: 16 }}>
+              {herramientas.length} seleccionada{herramientas.length !== 1 ? 's' : ''}
             </Text>
+            {herramientas.length === 0 && (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, paddingHorizontal: 4 }}>
+                <Text style={{ fontSize: 14 }}>⚠️</Text>
+                <Text style={{ color: '#9E5A38', fontSize: 12, fontWeight: '400', flex: 1 }}>
+                  Selecciona al menos una herramienta para continuar
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
