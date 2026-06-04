@@ -2,301 +2,191 @@ import { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import {
-  Box, FlaskConical, Calculator, Users, BookOpen,
-  Bell, Mic, ChevronRight, Search, X,
-} from 'lucide-react-native';
+import { Sprout, Boxes, Calculator, Users, BookOpen, Bell, Mic, ChevronRight, Search, X, ArrowUpRight } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { productos, materiasPrimas } from '@/db/schema';
+import { useUsuarioStore } from '@/store/usuario';
 
-type MenuItem = {
-  icon: React.ComponentType<{ size: number; stroke: string }>;
-  label: string;
-  desc: string;
-  ruta: string | null;
-  proximamente?: boolean;
-};
-
-const GRID: MenuItem[] = [
-  {
-    icon: Box,
-    label: 'Materias Primas',
-    desc: 'Conoce propiedades y beneficios',
-    ruta: '/(tabs)/materias',
-  },
-  {
-    icon: FlaskConical,
-    label: 'Productos Agroindustriales',
-    desc: 'Explora productos y procesos',
-    ruta: '/(tabs)/productos',
-  },
-  {
-    icon: Calculator,
-    label: 'Calculadora',
-    desc: 'Costos, rendimiento y ganancias',
-    ruta: '/(tabs)/costos',
-  },
-  {
-    icon: Users,
-    label: 'Comunidad',
-    desc: 'Comparte experiencias y aprende',
-    ruta: '/(tabs)/comunidad',
-    proximamente: true,
-  },
-];
-
-function handleNav(item: MenuItem) {
-  if (!item.ruta) return;
-  if (item.proximamente) {
-    Alert.alert('Próximamente', 'La Red de Productores estará disponible en la siguiente versión de AGRO-NET.');
-    return;
-  }
-  router.push(item.ruta as any);
-}
-
-type ResultadoBusqueda = {
-  tipo: 'producto' | 'materia';
-  id: string;
-  nombre: string;
-  subtitulo: string;
-};
+type Result = { tipo: 'materia' | 'producto'; id: string; nombre: string; sub: string; emoji: string };
 
 export default function Inicio() {
-  const [busqueda, setBusqueda] = useState('');
-  const [todosProductos, setTodosProductos] = useState<{ id: string; nombre: string; materiaPrimaId: string }[]>([]);
-  const [todasMaterias, setTodasMaterias] = useState<{ id: string; nombre: string; emoji: string }[]>([]);
+  const { nombre } = useUsuarioStore();
+  const firstName = nombre?.split(' ')[0] || '';
+
+  const [q, setQ]         = useState('');
+  const [allProds, setAllProds] = useState<{ id: string; nombre: string; materiaPrimaId: string }[]>([]);
+  const [allMats,  setAllMats]  = useState<{ id: string; nombre: string; emoji: string }[]>([]);
 
   useEffect(() => {
     db.select({ id: productos.id, nombre: productos.nombre, materiaPrimaId: productos.materiaPrimaId })
-      .from(productos).then(setTodosProductos);
+      .from(productos).then(setAllProds);
     db.select({ id: materiasPrimas.id, nombre: materiasPrimas.nombre, emoji: materiasPrimas.emoji })
-      .from(materiasPrimas).then(setTodasMaterias);
+      .from(materiasPrimas).then(setAllMats);
   }, []);
 
-  const resultados = useMemo((): ResultadoBusqueda[] => {
-    const q = busqueda.trim().toLowerCase();
-    if (!q) return [];
-    const materiaMap = Object.fromEntries(todasMaterias.map((m) => [m.id, m.nombre]));
-    const prods = todosProductos
-      .filter((p) => p.nombre.toLowerCase().includes(q) || materiaMap[p.materiaPrimaId]?.toLowerCase().includes(q))
-      .slice(0, 4)
-      .map((p) => ({ tipo: 'producto' as const, id: p.id, nombre: p.nombre, subtitulo: materiaMap[p.materiaPrimaId] ?? '' }));
-    const mats = todasMaterias
-      .filter((m) => m.nombre.toLowerCase().includes(q))
-      .slice(0, 3)
-      .map((m) => ({ tipo: 'materia' as const, id: m.id, nombre: `${m.emoji} ${m.nombre}`, subtitulo: 'Materia prima' }));
-    return [...mats, ...prods];
-  }, [busqueda, todosProductos, todasMaterias]);
+  const results = useMemo((): Result[] => {
+    const ql = q.trim().toLowerCase();
+    if (!ql) return [];
+    return [
+      ...allMats.filter((m) => m.nombre.toLowerCase().includes(ql))
+        .map((m) => ({ tipo: 'materia' as const, id: m.id, nombre: m.nombre, sub: 'Materia prima', emoji: m.emoji })),
+      ...allProds.filter((p) => p.nombre.toLowerCase().includes(ql))
+        .map((p) => ({ tipo: 'producto' as const, id: p.id, nombre: p.nombre, sub: allMats.find((m) => m.id === p.materiaPrimaId)?.nombre ?? '', emoji: '🧪' })),
+    ].slice(0, 6);
+  }, [q, allProds, allMats]);
 
-  function irA(r: ResultadoBusqueda) {
-    setBusqueda('');
+  function irA(r: Result) {
+    setQ('');
     if (r.tipo === 'producto') router.push(`/(tabs)/materias/producto/${r.id}` as any);
     else router.push(`/(tabs)/materias/${r.id}` as any);
   }
 
+  const GRID = [
+    { icon: Sprout,    title: 'Materias Primas',           desc: 'Conoce propiedades y beneficios',   go: () => router.push('/(tabs)/materias' as any) },
+    { icon: Boxes,     title: 'Productos Agroindustriales', desc: 'Explora productos y procesos',      go: () => router.push('/(tabs)/productos' as any) },
+    { icon: Calculator,title: 'Calculadora',                desc: 'Costos, rendimiento y ganancias',  go: () => router.push('/(tabs)/costos' as any) },
+    { icon: Users,     title: 'Comunidad',                  desc: 'Comparte experiencias y aprende',  go: () => router.push('/(tabs)/comunidad' as any), badge: 'Pronto' },
+  ];
+
   return (
-    <SafeAreaView className="flex-1 bg-tierra-50" edges={['top']}>
-      {/* ── HEADER ─────────────────────────────── */}
-      <View className="bg-verde-800 px-5 pt-3 pb-5">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3">
-            <View className="w-10 h-10 bg-verde-700 rounded-xl items-center justify-center">
-              <Text className="text-xl">🌿</Text>
-            </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
+      {/* Header */}
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 20 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
+            <Text style={{ fontSize: 28 }}>🌱</Text>
             <View>
-              <Text
-                className="text-white text-xl font-bold tracking-widest"
-                style={{ fontFamily: 'Poppins_600SemiBold' }}
-              >
-                AGRO-NET
-              </Text>
-              <Text className="text-verde-300 text-xs tracking-widest">
-                CONECTA, TRANSFORMA Y CRECE
-              </Text>
+              <Text style={{ color: '#F4F1EA', fontSize: 19, fontWeight: '600', letterSpacing: 0.5, fontFamily: 'Poppins_600SemiBold' }}>AGRO-NET</Text>
+              <Text style={{ color: '#A7C49A', fontSize: 9.5, fontWeight: '300', letterSpacing: 1.6, marginTop: 2 }}>CONECTA, TRANSFORMA Y CRECE</Text>
             </View>
           </View>
           <Pressable
-            onPress={() => Alert.alert('Notificaciones', 'Las notificaciones estarán disponibles próximamente.')}
-            className="w-10 h-10 bg-verde-700 rounded-xl items-center justify-center active:opacity-70"
+            onPress={() => Alert.alert('Notificaciones', 'Próximamente disponible.')}
+            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}
           >
-            <Bell size={18} stroke="#d6e2d4" />
+            <Bell size={20} color="#F4F1EA" strokeWidth={1.7} />
           </Pressable>
         </View>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* ── BIENVENIDA ──────────────────────────── */}
-        <View className="bg-verde-800 px-5 pt-2 pb-8">
-          <Text
-            className="text-white text-2xl"
-            style={{ fontFamily: 'Poppins_600SemiBold' }}
-          >
-            ¡Bienvenido!
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
+        {/* Bienvenida */}
+        <View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 4 }}>
+          <Text style={{ color: '#1A1A1A', fontSize: 24, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>
+            ¡Bienvenido{firstName ? `, ${firstName}` : ''}!
           </Text>
-          <Text className="text-verde-300 text-sm mt-1">
-            ¿Qué deseas hacer hoy?
-          </Text>
+          <Text style={{ color: '#4A4A4A', fontSize: 14, fontWeight: '300', marginTop: 2 }}>¿Qué deseas hacer hoy?</Text>
         </View>
 
-        {/* ── BUSCADOR GLOBAL ─────────────────────── */}
-        <View className="px-4 -mt-5 mb-1">
-          <View className="bg-white rounded-2xl border border-tierra-200 flex-row items-center px-3 py-2.5 gap-2"
-            style={{ shadowColor: '#1F3D36', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}
-          >
-            <Search size={18} stroke="#84a681" />
+        {/* Buscador */}
+        <View style={{ paddingHorizontal: 16, marginTop: 16 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, height: 50, borderWidth: 1, borderColor: '#B0A897' }}>
+            <Search size={19} color="#4A4A4A" strokeWidth={1.8} />
             <TextInput
-              className="flex-1 text-sm text-carbon"
+              value={q}
+              onChangeText={setQ}
               placeholder="Buscar productos o materias primas..."
-              placeholderTextColor="#a8a098"
-              value={busqueda}
-              onChangeText={setBusqueda}
-              style={{ fontFamily: 'Poppins_400Regular' }}
+              placeholderTextColor="#9A917F"
+              style={{ flex: 1, paddingHorizontal: 12, fontSize: 14, color: '#1A1A1A', fontFamily: 'Poppins_400Regular' }}
             />
-            {busqueda.length > 0 && (
-              <Pressable onPress={() => setBusqueda('')}>
-                <X size={16} stroke="#a8a098" />
+            {q.length > 0 && (
+              <Pressable onPress={() => setQ('')}>
+                <X size={18} color="#4A4A4A" strokeWidth={2} />
               </Pressable>
             )}
           </View>
 
-          {resultados.length > 0 && (
-            <View className="bg-white rounded-2xl border border-tierra-200 mt-1 overflow-hidden"
-              style={{ shadowColor: '#1F3D36', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}
-            >
-              {resultados.map((r, i) => (
-                <Pressable
-                  key={`${r.tipo}-${r.id}`}
-                  onPress={() => irA(r)}
-                  className={`flex-row items-center px-4 py-3 gap-3 active:bg-tierra-50 ${i > 0 ? 'border-t border-tierra-100' : ''}`}
-                >
-                  <Text className="text-base">{r.tipo === 'materia' ? '🌿' : '🧪'}</Text>
-                  <View className="flex-1">
-                    <Text className="text-carbon text-sm font-semibold">{r.nombre}</Text>
-                    <Text className="text-tierra-500 text-xs">{r.subtitulo}</Text>
+          {q.trim().length > 0 && (
+            <View style={{ backgroundColor: '#C1BAAE', borderRadius: 16, marginTop: 8, borderWidth: 1, borderColor: '#B0A897', overflow: 'hidden' }}>
+              {results.length > 0 ? results.map((r, i) => (
+                <Pressable key={`${r.tipo}-${r.id}`} onPress={() => irA(r)}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: i ? 1 : 0, borderTopColor: '#B0A897' }}>
+                  <Text style={{ fontSize: 20 }}>{r.emoji}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ color: '#1A1A1A', fontSize: 14, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>{r.nombre}</Text>
+                    <Text style={{ color: '#4A4A4A', fontSize: 11.5, fontWeight: '300' }}>{r.sub}</Text>
                   </View>
-                  <ChevronRight size={14} stroke="#a8a098" />
+                  <ArrowUpRight size={17} color="#9E5A38" strokeWidth={2} />
                 </Pressable>
-              ))}
+              )) : (
+                <View style={{ paddingHorizontal: 16, paddingVertical: 16 }}>
+                  <Text style={{ color: '#4A4A4A', fontSize: 13, fontWeight: '300' }}>Sin resultados para "{q}".</Text>
+                </View>
+              )}
             </View>
           )}
         </View>
 
-        {/* ── GRID PRINCIPAL ──────────────────────── */}
-        <View className="px-4 mt-3">
-          <View className="flex-row flex-wrap gap-3">
-            {GRID.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Pressable
-                  key={item.label}
-                  onPress={() => handleNav(item)}
-                  className="active:opacity-75"
-                  style={{ width: '47.5%' }}
-                >
-                  <View
-                    className="bg-white rounded-2xl p-4 border border-tierra-200"
-                    style={{
-                      shadowColor: '#1F3D36',
-                      shadowOpacity: 0.08,
-                      shadowRadius: 8,
-                      shadowOffset: { width: 0, height: 2 },
-                      elevation: 2,
-                    }}
-                  >
-                    <View className="w-10 h-10 bg-verde-100 rounded-xl items-center justify-center mb-3">
-                      <Icon size={20} stroke="#1F3D36" />
-                    </View>
-                    <Text
-                      className="text-carbon text-sm leading-5 mb-1"
-                      style={{ fontFamily: 'Poppins_600SemiBold' }}
-                      numberOfLines={2}
-                    >
-                      {item.label}
-                    </Text>
-                    <Text className="text-tierra-600 text-xs leading-4" numberOfLines={2}>
-                      {item.desc}
-                    </Text>
-                    <View className="flex-row items-center justify-end mt-2">
-                      {item.proximamente ? (
-                        <View className="bg-tierra-100 rounded-full px-2 py-0.5">
-                          <Text className="text-tierra-600 text-xs">Pronto</Text>
-                        </View>
-                      ) : (
-                        <ChevronRight size={14} stroke="#9E5A38" />
-                      )}
-                    </View>
-                  </View>
-                </Pressable>
-              );
-            })}
+        {/* Grid 2×2 */}
+        <View style={{ paddingHorizontal: 16, marginTop: 20, gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            {GRID.slice(0, 2).map((item) => <NavCard key={item.title} {...item} />)}
           </View>
-
-          {/* ── CAPACITACIÓN (full width) ──────────── */}
-          <Pressable
-            onPress={() => router.push('/(tabs)/calidad' as any)}
-            className="mt-3 active:opacity-75"
-          >
-            <View
-              className="bg-white rounded-2xl p-4 border border-tierra-200 flex-row items-center gap-4"
-              style={{
-                shadowColor: '#1F3D36',
-                shadowOpacity: 0.08,
-                shadowRadius: 8,
-                shadowOffset: { width: 0, height: 2 },
-                elevation: 2,
-              }}
-            >
-              <View className="w-12 h-12 bg-cosecha-400 rounded-xl items-center justify-center">
-                <BookOpen size={22} stroke="#fff" />
-              </View>
-              <View className="flex-1">
-                <Text
-                  className="text-carbon text-sm mb-0.5"
-                  style={{ fontFamily: 'Poppins_600SemiBold' }}
-                >
-                  Capacitación
-                </Text>
-                <Text className="text-tierra-600 text-xs leading-4">
-                  Aprende con guías, videos y manuales
-                </Text>
-              </View>
-              <ChevronRight size={16} stroke="#9E5A38" />
-            </View>
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            {GRID.slice(2, 4).map((item) => <NavCard key={item.title} {...item} />)}
+          </View>
         </View>
 
-        {/* ── ASISTENTE DE VOZ (integrado en scroll) ─ */}
-        <Pressable
-          onPress={() => Alert.alert('Asistente de voz', 'Próximamente disponible.')}
-          className="mx-4 mt-3 active:opacity-75"
-        >
-          <View
-            className="bg-cosecha-500 rounded-2xl p-4 flex-row items-center gap-4"
-            style={{ shadowColor: '#9E5A38', shadowOpacity: 0.3, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 3 }}
-          >
-            <View className="w-12 h-12 bg-white bg-opacity-20 rounded-xl items-center justify-center">
-              <Mic size={24} stroke="#fff" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-white font-bold text-sm" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-                Asistente de voz
-              </Text>
-              <Text className="text-white text-xs opacity-80">Próximamente disponible</Text>
-            </View>
+        {/* Capacitación full-width */}
+        <Pressable onPress={() => router.push('/(tabs)/calidad' as any)}
+          style={{ marginHorizontal: 16, marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 16, backgroundColor: '#1F3D36', borderRadius: 16, padding: 16, shadowColor: '#1F3D36', shadowOpacity: 0.6, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 6 }}>
+          <View style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(147,179,111,0.16)', alignItems: 'center', justifyContent: 'center' }}>
+            <BookOpen size={25} color="#93B36F" strokeWidth={1.6} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#F4F1EA', fontSize: 16, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Capacitación</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 2 }}>Aprende con guías, videos y manuales</Text>
+          </View>
+          <ChevronRight size={20} color="#93B36F" strokeWidth={2} />
+        </Pressable>
+
+        {/* Asistente de voz */}
+        <Pressable onPress={() => Alert.alert('Asistente de voz', 'Próximamente disponible.')}
+          style={{ marginHorizontal: 16, marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#C1BAAE', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#9E5A38', borderStyle: 'dashed' }}>
+          <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: '#9E5A38', alignItems: 'center', justifyContent: 'center' }}>
+            <Mic size={22} color="#F7F2EC" strokeWidth={1.8} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#1A1A1A', fontSize: 14.5, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Asistente de voz</Text>
+            <Text style={{ color: '#4A4A4A', fontSize: 12, fontWeight: '300', marginTop: 2 }}>Próximamente disponible</Text>
+          </View>
+          <View style={{ backgroundColor: '#9E5A38', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 4 }}>
+            <Text style={{ color: '#F6EAE2', fontSize: 10, fontWeight: '600', letterSpacing: 0.4 }}>Pronto</Text>
           </View>
         </Pressable>
 
-        {/* ── NOTA NOM/CODEX ──────────────────────── */}
-        <View className="mx-4 mt-4 mb-8 bg-verde-800 rounded-2xl p-4">
-          <Text className="text-verde-200 text-xs text-center leading-5">
-            Información basada en{' '}
-            <Text className="font-bold text-verde-100">
-              normas oficiales mexicanas (NOM, CODEX)
-            </Text>
-            {' '}integrada en cada producto.
+        {/* Nota NOM */}
+        <View style={{ marginHorizontal: 16, marginTop: 20, flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
+          <Text style={{ fontSize: 15, marginTop: 1 }}>ℹ️</Text>
+          <Text style={{ color: '#4A4A4A', fontSize: 11.5, fontWeight: '300', lineHeight: 18, flex: 1 }}>
+            Información basada en normas oficiales mexicanas (NOM, CODEX) integrada en cada producto.
           </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function NavCard({ icon: Icon, title, desc, go, badge }: { icon: any; title: string; desc: string; go: () => void; badge?: string }) {
+  return (
+    <Pressable onPress={go} style={{ flex: 1, backgroundColor: '#C1BAAE', borderRadius: 16, padding: 16, minHeight: 152, shadowColor: '#1A1A1A', shadowOpacity: 0.25, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <View style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: '#1F3D36', alignItems: 'center', justifyContent: 'center' }}>
+          <Icon size={24} color="#93B36F" strokeWidth={1.6} />
+        </View>
+        {badge && (
+          <View style={{ backgroundColor: '#9E5A38', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 4 }}>
+            <Text style={{ color: '#F6EAE2', fontSize: 10, fontWeight: '600' }}>{badge}</Text>
+          </View>
+        )}
+      </View>
+      <View style={{ marginTop: 'auto', paddingTop: 12 }}>
+        <Text style={{ color: '#1A1A1A', fontSize: 15, fontWeight: '600', lineHeight: 20, fontFamily: 'Poppins_600SemiBold' }}>{title}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 4 }}>
+          <Text style={{ color: '#4A4A4A', fontSize: 11.5, fontWeight: '300', lineHeight: 16, flex: 1, maxWidth: '85%' }}>{desc}</Text>
+          <ChevronRight size={18} color="#9E5A38" strokeWidth={2} />
+        </View>
+      </View>
+    </Pressable>
   );
 }

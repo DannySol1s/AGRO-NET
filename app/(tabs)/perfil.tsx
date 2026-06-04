@@ -1,170 +1,168 @@
-import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ChevronLeft } from 'lucide-react-native';
+import { ArrowLeft, Wrench, Target, RotateCcw, Moon } from 'lucide-react-native';
 import { useUsuarioStore, type HerramientaDisponible, type NivelExperiencia } from '@/store/usuario';
+import { EstadoMunicipioSelect } from '@/components/EstadoMunicipioSelect';
+import { useState } from 'react';
 
 const HERRAMIENTAS: { id: HerramientaDisponible; label: string; emoji: string }[] = [
-  { id: 'olla_grande',         label: 'Olla grande',              emoji: '🫕' },
-  { id: 'estufa',              label: 'Estufa',                   emoji: '🔥' },
-  { id: 'licuadora',           label: 'Licuadora',                emoji: '🥤' },
-  { id: 'cuchillos',           label: 'Cuchillos',                emoji: '🔪' },
-  { id: 'tabla_cortar',        label: 'Tabla de cortar',          emoji: '🪵' },
-  { id: 'bascula',             label: 'Báscula',                  emoji: '⚖️' },
-  { id: 'termometro',          label: 'Termómetro',               emoji: '🌡️' },
-  { id: 'envases_frascos',     label: 'Envases / Frascos',        emoji: '🫙' },
-  { id: 'refrigerador',        label: 'Refrigerador',             emoji: '🧊' },
-  { id: 'recipientes_plasticos', label: 'Recipientes plásticos',  emoji: '🪣' },
-  { id: 'cucharas_acero',      label: 'Cucharas de acero',        emoji: '🥄' },
-  { id: 'pelador',             label: 'Pelador',                  emoji: '🫛' },
-  { id: 'rallador',            label: 'Rallador',                 emoji: '🧀' },
-  { id: 'molino_mano',         label: 'Molino de mano',           emoji: '⚙️' },
-  { id: 'exprimidor',          label: 'Exprimidor',               emoji: '🍋' },
-  { id: 'colador',             label: 'Colador',                  emoji: '🫧' },
-  { id: 'vasos_medidores',     label: 'Vasos medidores',          emoji: '🥛' },
-  { id: 'pinzas_cocina',       label: 'Pinzas de cocina',         emoji: '🦾' },
-  { id: 'embudo',              label: 'Embudo',                   emoji: '🔻' },
+  { id: 'olla_grande',          label: 'Olla grande',           emoji: '🍲' },
+  { id: 'estufa',               label: 'Estufa',                emoji: '🔥' },
+  { id: 'licuadora',            label: 'Licuadora',             emoji: '🌀' },
+  { id: 'cuchillos',            label: 'Cuchillos',             emoji: '🔪' },
+  { id: 'tabla_cortar',         label: 'Tabla de cortar',       emoji: '🪵' },
+  { id: 'bascula',              label: 'Báscula',               emoji: '⚖️' },
+  { id: 'termometro',           label: 'Termómetro',            emoji: '🌡️' },
+  { id: 'envases_frascos',      label: 'Envases / frascos',     emoji: '🫙' },
+  { id: 'refrigerador',         label: 'Refrigerador',          emoji: '❄️' },
+  { id: 'recipientes_plasticos',label: 'Recipientes plásticos', emoji: '🥡' },
+  { id: 'cucharas_acero',       label: 'Cucharas de acero',     emoji: '🥄' },
+  { id: 'pelador',              label: 'Pelador',               emoji: '🥔' },
+  { id: 'rallador',             label: 'Rallador',              emoji: '🧀' },
+  { id: 'molino_mano',          label: 'Molino de mano',        emoji: '⚙️' },
+  { id: 'exprimidor',           label: 'Exprimidor',            emoji: '🍋' },
+  { id: 'colador',              label: 'Colador',               emoji: '🕳️' },
+  { id: 'vasos_medidores',      label: 'Vasos medidores',       emoji: '🥛' },
+  { id: 'pinzas_cocina',        label: 'Pinzas de cocina',      emoji: '🍴' },
+  { id: 'embudo',               label: 'Embudo',                emoji: '🔻' },
 ];
 
-const NIVELES: { id: NivelExperiencia; label: string; desc: string; emoji: string }[] = [
-  { id: 'principiante', label: 'Principiante', desc: 'Primera vez transformando', emoji: '🌱' },
-  { id: 'medio',        label: 'Intermedio',   desc: 'He hecho algunos productos', emoji: '🌿' },
-  { id: 'avanzado',     label: 'Avanzado',     desc: 'Tengo experiencia',          emoji: '🌳' },
+const NIVELES: { id: NivelExperiencia; emoji: string; label: string; desc: string }[] = [
+  { id: 'principiante', emoji: '🌱', label: 'Principiante', desc: 'Nunca he elaborado productos' },
+  { id: 'medio',        emoji: '🌿', label: 'Intermedio',   desc: 'He hecho algunos productos' },
+  { id: 'avanzado',     emoji: '🌳', label: 'Avanzado',     desc: 'Tengo experiencia' },
 ];
+
+function SectionTitle({ icon: Icon, children }: { icon: any; children: string }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24, marginBottom: 12 }}>
+      <Icon size={18} color="#9E5A38" strokeWidth={1.9} />
+      <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '600', letterSpacing: 0.6, textTransform: 'uppercase', fontFamily: 'Poppins_600SemiBold' }}>{children}</Text>
+    </View>
+  );
+}
 
 export default function Perfil() {
-  const {
-    nombre, setNombre,
-    municipio, setMunicipio,
-    herramientas, toggleHerramienta,
-    nivelExperiencia, setNivelExperiencia,
-    resetDiagnostico,
-  } = useUsuarioStore();
+  const { nombre, setNombre, estado, setEstado, municipio, setMunicipio,
+          herramientas, toggleHerramienta, nivelExperiencia, setNivelExperiencia,
+          favoritos, resetDiagnostico } = useUsuarioStore();
+  const [darkMode, setDarkMode] = useState(false);
+  const inicial = (nombre || 'A').trim().charAt(0).toUpperCase();
 
   return (
-    <SafeAreaView className="flex-1 bg-tierra-50" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
       {/* Header */}
-      <View className="bg-verde-800 px-6 pt-4 pb-5">
-        <Pressable onPress={() => router.back()} className="mb-3 self-start">
-          <ChevronLeft size={24} stroke="#d6e2d4" />
-        </Pressable>
-        <View className="flex-row items-center gap-3">
-          <View className="bg-verde-700 rounded-xl p-2">
-            <Text className="text-xl">👤</Text>
-          </View>
-          <View>
-            <Text className="text-white text-lg font-bold" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-              Mi Perfil
-            </Text>
-            <Text className="text-verde-300 text-xs">Recursos técnicos y nivel de producción</Text>
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Pressable onPress={() => router.back()} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
+          </Pressable>
+          <Text style={{ fontSize: 22 }}>👤</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#F4F1EA', fontSize: 18, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Mi Perfil</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300' }}>Recursos técnicos y nivel de producción</Text>
           </View>
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-4 pt-5" showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
 
-        {/* Datos personales */}
-        <View className="bg-white rounded-2xl p-4 mb-4 border border-tierra-200">
-          <Text className="text-carbon font-bold text-sm mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-            👤 Datos del productor
-          </Text>
-          <View className="gap-3">
-            <View>
-              <Text className="text-tierra-700 text-xs mb-1.5">Nombre</Text>
-              <TextInput
-                className="bg-tierra-50 border border-tierra-200 rounded-xl px-4 py-3 text-carbon text-sm"
-                placeholder="Tu nombre"
-                placeholderTextColor="#a8a098"
-                value={nombre}
-                onChangeText={setNombre}
-              />
-            </View>
-            <View>
-              <Text className="text-tierra-700 text-xs mb-1.5">Municipio o comunidad</Text>
-              <TextInput
-                className="bg-tierra-50 border border-tierra-200 rounded-xl px-4 py-3 text-carbon text-sm"
-                placeholder="Ej: Escárcega, Campeche"
-                placeholderTextColor="#a8a098"
-                value={municipio}
-                onChangeText={setMunicipio}
-              />
-            </View>
+        {/* Avatar */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14 }}>
+          <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: '#1F3D36', alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ color: '#93B36F', fontSize: 24, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{inicial}</Text>
           </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#1A1A1A', fontSize: 16, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{nombre || 'Productor'}</Text>
+            <Text style={{ color: '#4A4A4A', fontSize: 12, fontWeight: '300', marginTop: 2 }}>
+              {herramientas.length} herramientas · {favoritos.length} favoritos
+            </Text>
+          </View>
+        </View>
+
+        {/* Datos */}
+        <SectionTitle icon={() => <Text style={{ fontSize: 18 }}>👤</Text>}>Mis datos</SectionTitle>
+        <View style={{ gap: 12 }}>
+          <View>
+            <Text style={{ color: '#1A1A1A', fontSize: 12.5, fontWeight: '500', marginBottom: 6, fontFamily: 'Poppins_500Medium' }}>Nombre</Text>
+            <TextInput
+              value={nombre}
+              onChangeText={setNombre}
+              placeholder="Tu nombre"
+              placeholderTextColor="#9A917F"
+              style={{ backgroundColor: '#C1BAAE', borderRadius: 12, paddingHorizontal: 16, height: 48, borderWidth: 1, borderColor: '#B0A897', fontSize: 15, color: '#1A1A1A', fontFamily: 'Poppins_400Regular' }}
+            />
+          </View>
+          <EstadoMunicipioSelect estado={estado} municipio={municipio} onEstado={setEstado} onMunicipio={setMunicipio} />
         </View>
 
         {/* Herramientas */}
-        <View className="bg-white rounded-2xl p-4 mb-4 border border-tierra-200">
-          <Text className="text-carbon font-bold text-sm mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-            🔧 Herramientas disponibles
-          </Text>
-          <View className="flex-row flex-wrap gap-2">
-            {HERRAMIENTAS.map((h) => {
-              const activa = herramientas.includes(h.id);
-              return (
-                <Pressable
-                  key={h.id}
-                  onPress={() => toggleHerramienta(h.id)}
-                  className={`flex-row items-center gap-1.5 px-3 py-2 rounded-xl border ${
-                    activa ? 'bg-verde-100 border-verde-500' : 'bg-tierra-50 border-tierra-200'
-                  }`}
-                >
-                  <Text className="text-sm">{h.emoji}</Text>
-                  <Text className={`text-xs font-medium ${activa ? 'text-verde-800' : 'text-tierra-700'}`}>
-                    {h.label}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-          <Text className="text-tierra-500 text-xs mt-3">
-            {herramientas.length} de {HERRAMIENTAS.length} herramientas seleccionadas
-          </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 24, marginBottom: 12 }}>
+          <Wrench size={18} color="#9E5A38" strokeWidth={1.9} />
+          <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '600', letterSpacing: 0.6, textTransform: 'uppercase', flex: 1, fontFamily: 'Poppins_600SemiBold' }}>MIS HERRAMIENTAS</Text>
+          <Text style={{ color: '#465D43', fontSize: 12, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>{herramientas.length} de {HERRAMIENTAS.length}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {HERRAMIENTAS.map((h) => {
+            const on = herramientas.includes(h.id);
+            return (
+              <Pressable key={h.id} onPress={() => toggleHerramienta(h.id)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: on ? '#1F3D36' : '#C1BAAE', borderWidth: 1, borderColor: on ? '#1F3D36' : '#B0A897', borderRadius: 99, paddingHorizontal: 14, paddingVertical: 10 }}>
+                <Text style={{ fontSize: 14 }}>{h.emoji}</Text>
+                <Text style={{ color: on ? '#F4F1EA' : '#1A1A1A', fontSize: 12.5, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>{h.label}</Text>
+                {on && <Text style={{ color: '#93B36F', fontSize: 12, fontWeight: '700' }}>✓</Text>}
+              </Pressable>
+            );
+          })}
         </View>
 
-        {/* Nivel de experiencia */}
-        <View className="bg-white rounded-2xl p-4 mb-4 border border-tierra-200">
-          <Text className="text-carbon font-bold text-sm mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-            🏅 Nivel de experiencia
-          </Text>
-          <View className="gap-2">
-            {NIVELES.map((n) => {
-              const activo = nivelExperiencia === n.id;
-              return (
-                <Pressable
-                  key={n.id}
-                  onPress={() => setNivelExperiencia(n.id)}
-                  className={`flex-row items-center p-4 rounded-xl border-2 ${
-                    activo ? 'bg-verde-50 border-verde-500' : 'bg-tierra-50 border-tierra-100'
-                  }`}
-                >
-                  <Text className="text-2xl mr-3">{n.emoji}</Text>
-                  <View className="flex-1">
-                    <Text className={`font-semibold text-sm ${activo ? 'text-verde-800' : 'text-carbon'}`}>
-                      {n.label}
-                    </Text>
-                    <Text className={`text-xs mt-0.5 ${activo ? 'text-verde-600' : 'text-tierra-500'}`}>
-                      {n.desc}
-                    </Text>
-                  </View>
-                  <View className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
-                    activo ? 'border-verde-600 bg-verde-600' : 'border-tierra-300 bg-white'
-                  }`}>
-                    {activo && <View className="w-2 h-2 rounded-full bg-white" />}
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
+        {/* Nivel */}
+        <SectionTitle icon={Target}>Nivel de experiencia</SectionTitle>
+        <View style={{ gap: 10 }}>
+          {NIVELES.map((n) => {
+            const on = nivelExperiencia === n.id;
+            return (
+              <Pressable key={n.id} onPress={() => setNivelExperiencia(n.id)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: on ? '#1F3D36' : '#C1BAAE', borderWidth: 2, borderColor: on ? '#9E5A38' : 'transparent', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14 }}>
+                <Text style={{ fontSize: 26 }}>{n.emoji}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: on ? '#F4F1EA' : '#1A1A1A', fontSize: 15, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{n.label}</Text>
+                  <Text style={{ color: on ? '#A7C49A' : '#4A4A4A', fontSize: 11.5, fontWeight: '300', marginTop: 2 }}>{n.desc}</Text>
+                </View>
+                <View style={{ width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: on ? '#9E5A38' : '#9A917F', alignItems: 'center', justifyContent: 'center' }}>
+                  {on && <View style={{ width: 11, height: 11, borderRadius: 5.5, backgroundColor: '#9E5A38' }} />}
+                </View>
+              </Pressable>
+            );
+          })}
         </View>
 
         {/* Reconfigurar */}
-        <Pressable
-          onPress={() => { resetDiagnostico(); router.replace('/diagnostico'); }}
-          className="mb-6 py-4 rounded-2xl border-2 border-red-200 bg-red-50 items-center active:opacity-70"
-        >
-          <Text className="text-red-600 font-semibold text-sm">Reconfigurar perfil</Text>
-          <Text className="text-red-400 text-xs mt-0.5">Reinicia herramientas y nivel de experiencia</Text>
+        <Pressable onPress={() => { resetDiagnostico(); router.replace('/diagnostico'); }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: 'rgba(158,90,56,0.1)', borderWidth: 1, borderColor: 'rgba(158,90,56,0.35)', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, marginTop: 24 }}>
+          <RotateCcw size={19} color="#9E5A38" strokeWidth={1.9} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#9E5A38', fontSize: 14, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Reconfigurar perfil</Text>
+            <Text style={{ color: '#4A4A4A', fontSize: 11.5, fontWeight: '300', marginTop: 2 }}>Reinicia herramientas y nivel de experiencia</Text>
+          </View>
         </Pressable>
+
+        {/* Modo noche */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14, marginTop: 12 }}>
+          <Moon size={19} color="#465D43" strokeWidth={1.7} />
+          <Text style={{ color: '#1A1A1A', fontSize: 14, fontWeight: '500', flex: 1, fontFamily: 'Poppins_500Medium' }}>Modo noche</Text>
+          <Pressable onPress={() => setDarkMode(!darkMode)}
+            style={{ width: 48, height: 28, borderRadius: 14, backgroundColor: darkMode ? '#9E5A38' : '#9A917F', padding: 3, justifyContent: 'center', alignItems: darkMode ? 'flex-end' : 'flex-start' }}>
+            <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: '#F4F1EA' }} />
+          </Pressable>
+        </View>
+
+        {/* Version */}
+        <View style={{ alignItems: 'center', marginTop: 24 }}>
+          <Text style={{ fontSize: 24 }}>🌱</Text>
+          <Text style={{ color: '#7C9C59', fontSize: 11, fontWeight: '500', marginTop: 8, letterSpacing: 1, fontFamily: 'Poppins_500Medium' }}>AGRO-NET · v1.0</Text>
+        </View>
 
       </ScrollView>
     </SafeAreaView>

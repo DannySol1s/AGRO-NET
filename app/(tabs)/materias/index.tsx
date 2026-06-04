@@ -2,110 +2,101 @@ import { useEffect, useState } from 'react';
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, ChevronRight, Sprout } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { materiasPrimas } from '@/db/schema';
 import { useSeleccionStore } from '@/store/seleccion';
 
-type MateriaPrima = typeof materiasPrimas.$inferSelect;
+type Materia = typeof materiasPrimas.$inferSelect;
 
-const CATEGORIA_COLOR: Record<string, { color: string; bg: string }> = {
-  fruta:     { color: '#dc2626', bg: '#fee2e2' },
-  tuberculo: { color: '#c2410c', bg: '#ffedd5' },
-  hierba:    { color: '#166534', bg: '#dcfce7' },
-  semilla:   { color: '#92400e', bg: '#fef3c7' },
-  legumbre:  { color: '#4d7c0f', bg: '#ecfccb' },
-};
-
-const CATEGORIA_LABEL: Record<string, string> = {
-  fruta:     'Fruta',
-  tuberculo: 'Tubérculo',
-  hierba:    'Hierba',
-  semilla:   'Semilla',
-  legumbre:  'Legumbre',
+const CAT_COLOR: Record<string, string> = {
+  fruta: '#C9A227', tuberculo: '#8A6A4A', hierba: '#5C7A3F',
+  semilla: '#7A5A38', legumbre: '#A07842',
 };
 
 export default function MateriasIndex() {
-  const [materias, setMaterias] = useState<MateriaPrima[]>([]);
-  const [cargando, setCargando] = useState(true);
+  const [materias, setMaterias]   = useState<Materia[]>([]);
+  const [cats, setCats]           = useState<string[]>([]);
+  const [cargando, setCargando]   = useState(true);
   const setMateriaPrima = useSeleccionStore((s) => s.setMateriaPrima);
 
   useEffect(() => {
-    db.select().from(materiasPrimas).then((data) => {
-      setMaterias(data);
-      setCargando(false);
-    });
+    db.select().from(materiasPrimas).then((data) => { setMaterias(data); setCargando(false); });
   }, []);
+
+  const allCats = [...new Set(materias.map((m) => m.categoria))];
+  const toggle = (c: string) => setCats(cats.includes(c) ? cats.filter((x) => x !== c) : [...cats, c]);
+  const list = cats.length ? materias.filter((m) => cats.includes(m.categoria)) : materias;
+
+  const CAT_LABEL: Record<string, string> = {
+    fruta: 'Fruta', tuberculo: 'Tubérculo', hierba: 'Hierba', semilla: 'Semilla', legumbre: 'Legumbre',
+  };
 
   function seleccionar(id: string) {
     setMateriaPrima(id);
-    router.push(`/(tabs)/materias/${id}`);
+    router.push(`/(tabs)/materias/${id}` as any);
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
       {/* Header */}
-      <View className="bg-verde-800 px-6 pt-4 pb-5">
-        <Pressable onPress={() => router.back()} className="mb-3 self-start">
-          <ChevronLeft size={24} stroke="#bbf7d0" />
-        </Pressable>
-        <View className="flex-row items-center gap-3 mb-1">
-          <View className="bg-verde-700 rounded-xl p-2">
-            <Text className="text-xl">🌿</Text>
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <Pressable onPress={() => router.back()} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
+          </Pressable>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#F4F1EA', fontSize: 18, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Materias Primas</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Información nutricional y propiedades funcionales</Text>
           </View>
-          <View>
-            <Text className="text-white text-lg font-bold">Materias Primas</Text>
-            <Text className="text-verde-300 text-xs">Información nutricional y propiedades funcionales</Text>
+          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(147,179,111,0.16)', alignItems: 'center', justifyContent: 'center' }}>
+            <Sprout size={21} color="#93B36F" strokeWidth={1.7} />
           </View>
         </View>
       </View>
 
       {cargando ? (
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-verde-700">Cargando...</Text>
-        </View>
-      ) : materias.length === 0 ? (
-        <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-4xl mb-4">🌾</Text>
-          <Text className="text-verde-800 text-lg font-semibold text-center">
-            Aún no hay materias primas cargadas
-          </Text>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ color: '#4A4A4A', fontSize: 14 }}>Cargando...</Text>
         </View>
       ) : (
-        <>
-          <View className="px-4 pt-3 pb-2">
-            <Text className="text-gray-500 text-xs">Selecciona una o más categorías</Text>
-          </View>
-          <FlatList
-            data={materias}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16, gap: 10 }}
-            renderItem={({ item }) => {
-              const cat = CATEGORIA_COLOR[item.categoria] ?? { color: '#166534', bg: '#dcfce7' };
-              return (
-                <Pressable
-                  onPress={() => seleccionar(item.id)}
-                  className="flex-row items-center bg-white rounded-2xl p-4 border border-gray-100 active:opacity-75"
-                  style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1 }}
-                >
-                  <View
-                    className="w-12 h-12 rounded-xl items-center justify-center mr-4"
-                    style={{ backgroundColor: cat.bg }}
-                  >
-                    <Text className="text-2xl">{item.emoji}</Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-gray-900 font-semibold text-sm">{item.nombre}</Text>
-                    <Text className="text-gray-500 text-xs mt-0.5" style={{ color: cat.color }}>
-                      {CATEGORIA_LABEL[item.categoria] ?? item.categoria}
-                    </Text>
-                  </View>
-                  <ChevronRight size={18} stroke="#9ca3af" />
-                </Pressable>
-              );
-            }}
-          />
-        </>
+        <FlatList
+          data={list}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={
+            <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
+              <Text style={{ color: '#4A4A4A', fontSize: 13, fontWeight: '500', marginBottom: 10, fontFamily: 'Poppins_500Medium' }}>Selecciona una o más categorías</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {allCats.map((c) => {
+                  const on = cats.includes(c);
+                  return (
+                    <Pressable key={c} onPress={() => toggle(c)}
+                      style={{ backgroundColor: on ? '#465D43' : '#C1BAAE', borderWidth: 1, borderColor: on ? '#465D43' : '#B0A897', borderRadius: 99, paddingHorizontal: 14, paddingVertical: 8 }}>
+                      <Text style={{ color: on ? '#F4F1EA' : '#1A1A1A', fontSize: 12.5, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>{CAT_LABEL[c] ?? c}</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          }
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24, gap: 10 }}
+          renderItem={({ item }) => (
+            <Pressable onPress={() => seleccionar(item.id)}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#C1BAAE', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14 }}>
+              <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: '#D8D2C8', alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 26 }}>{item.emoji}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: '#1A1A1A', fontSize: 16, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{item.nombre}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                  <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: CAT_COLOR[item.categoria] ?? '#465D43' }} />
+                  <Text style={{ color: '#4A4A4A', fontSize: 12, fontWeight: '300' }}>{CAT_LABEL[item.categoria] ?? item.categoria}</Text>
+                </View>
+              </View>
+              <ChevronRight size={20} color="#9E5A38" strokeWidth={2} />
+            </Pressable>
+          )}
+        />
       )}
     </SafeAreaView>
   );
