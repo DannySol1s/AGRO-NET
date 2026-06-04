@@ -1,56 +1,57 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ScrollView, TextInput } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ChevronRight, ChevronLeft } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react-native';
 import { useUsuarioStore, type HerramientaDisponible, type NivelExperiencia } from '@/store/usuario';
+import { EstadoMunicipioSelect } from '@/components/EstadoMunicipioSelect';
+import { TextInput } from 'react-native';
 
 const HERRAMIENTAS: { id: HerramientaDisponible; label: string; emoji: string }[] = [
-  { id: 'olla_grande',          label: 'Olla grande',           emoji: '🫕' },
+  { id: 'olla_grande',          label: 'Olla grande',           emoji: '🍲' },
   { id: 'estufa',               label: 'Estufa',                emoji: '🔥' },
-  { id: 'licuadora',            label: 'Licuadora',             emoji: '🥤' },
+  { id: 'licuadora',            label: 'Licuadora',             emoji: '🌀' },
   { id: 'cuchillos',            label: 'Cuchillos',             emoji: '🔪' },
   { id: 'tabla_cortar',         label: 'Tabla de cortar',       emoji: '🪵' },
   { id: 'bascula',              label: 'Báscula',               emoji: '⚖️' },
   { id: 'termometro',           label: 'Termómetro',            emoji: '🌡️' },
-  { id: 'envases_frascos',      label: 'Envases / Frascos',     emoji: '🫙' },
-  { id: 'refrigerador',         label: 'Refrigerador',          emoji: '🧊' },
-  { id: 'recipientes_plasticos',label: 'Recipientes plásticos', emoji: '🪣' },
+  { id: 'envases_frascos',      label: 'Envases / frascos',     emoji: '🫙' },
+  { id: 'refrigerador',         label: 'Refrigerador',          emoji: '❄️' },
+  { id: 'recipientes_plasticos',label: 'Recipientes plásticos', emoji: '🥡' },
   { id: 'cucharas_acero',       label: 'Cucharas de acero',     emoji: '🥄' },
-  { id: 'pelador',              label: 'Pelador',               emoji: '🫛' },
+  { id: 'pelador',              label: 'Pelador',               emoji: '🥔' },
   { id: 'rallador',             label: 'Rallador',              emoji: '🧀' },
   { id: 'molino_mano',          label: 'Molino de mano',        emoji: '⚙️' },
   { id: 'exprimidor',           label: 'Exprimidor',            emoji: '🍋' },
-  { id: 'colador',              label: 'Colador',               emoji: '🫧' },
+  { id: 'colador',              label: 'Colador',               emoji: '🕳️' },
   { id: 'vasos_medidores',      label: 'Vasos medidores',       emoji: '🥛' },
-  { id: 'pinzas_cocina',        label: 'Pinzas de cocina',      emoji: '🦾' },
+  { id: 'pinzas_cocina',        label: 'Pinzas de cocina',      emoji: '🍴' },
   { id: 'embudo',               label: 'Embudo',                emoji: '🔻' },
 ];
 
-const NIVELES: { id: NivelExperiencia; label: string; desc: string; emoji: string }[] = [
-  { id: 'principiante', label: 'Principiante', desc: 'Nunca he elaborado productos',          emoji: '🌱' },
-  { id: 'medio',        label: 'Intermedio',   desc: 'He elaborado algunos productos básicos', emoji: '🌿' },
-  { id: 'avanzado',     label: 'Avanzado',     desc: 'Tengo experiencia en procesamiento',    emoji: '🌳' },
+const NIVELES: { id: NivelExperiencia; emoji: string; label: string; desc: string }[] = [
+  { id: 'principiante', emoji: '🌱', label: 'Principiante', desc: 'Nunca he elaborado productos' },
+  { id: 'medio',        emoji: '🌿', label: 'Intermedio',   desc: 'He elaborado algunos productos básicos' },
+  { id: 'avanzado',     emoji: '🌳', label: 'Avanzado',     desc: 'Tengo experiencia en procesamiento' },
 ];
 
-const PASOS_TOTAL = 4;
+const PASOS = 4;
 
 export default function Diagnostico() {
   const [paso, setPaso] = useState(1);
-  const {
-    nombre, setNombre,
-    municipio, setMunicipio,
-    herramientas, toggleHerramienta,
-    nivelExperiencia, setNivelExperiencia,
-    setOnboardingCompleto,
-  } = useUsuarioStore();
+  const { nombre, setNombre, estado, setEstado, municipio, setMunicipio,
+          herramientas, toggleHerramienta, nivelExperiencia, setNivelExperiencia,
+          setOnboardingCompleto } = useUsuarioStore();
+
+  const canNext = paso === 1
+    ? nombre.trim().length > 0
+    : paso === 3
+      ? !!nivelExperiencia
+      : true;
 
   function avanzar() {
-    if (paso < PASOS_TOTAL) setPaso(paso + 1);
-    else {
-      setOnboardingCompleto(true);
-      router.replace('/(tabs)/inicio');
-    }
+    if (paso < PASOS) setPaso(paso + 1);
+    else { setOnboardingCompleto(true); router.replace('/(tabs)/inicio'); }
   }
 
   function retroceder() {
@@ -59,63 +60,48 @@ export default function Diagnostico() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-tierra-50" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
       {/* Header */}
-      <View className="bg-verde-800 px-6 pt-4 pb-6">
-        <Pressable onPress={retroceder} className="mb-4">
-          <ChevronLeft size={24} stroke="#d6e2d4" />
-        </Pressable>
-        <Text className="text-verde-300 text-sm mb-2">Paso {paso} de {PASOS_TOTAL}</Text>
-        <View className="flex-row gap-2">
-          {Array.from({ length: PASOS_TOTAL }).map((_, i) => (
-            <View
-              key={i}
-              className={`h-1.5 flex-1 rounded-full ${i < paso ? 'bg-cosecha-500' : 'bg-verde-700'}`}
-            />
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 20 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+          <Pressable onPress={retroceder} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+            <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
+          </Pressable>
+          <Text style={{ color: '#A7C49A', fontSize: 13, fontWeight: '500', flex: 1 }}>Paso {paso} de {PASOS}</Text>
+          <Text style={{ color: '#F4F1EA', fontSize: 13, fontWeight: '600' }}>Diagnóstico</Text>
+        </View>
+        <View style={{ flexDirection: 'row', gap: 6 }}>
+          {Array.from({ length: PASOS }).map((_, i) => (
+            <View key={i} style={{ flex: 1, height: 5, borderRadius: 3, backgroundColor: i < paso ? '#9E5A38' : 'rgba(255,255,255,0.14)' }} />
           ))}
         </View>
       </View>
 
-      <ScrollView className="flex-1 px-6 pt-6" showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
 
         {/* PASO 1 — Datos personales */}
         {paso === 1 && (
           <View>
-            <Text className="text-carbon text-2xl font-bold mb-1" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-              ¿Cómo te llamas?
-            </Text>
-            <Text className="text-tierra-600 text-sm mb-6">
-              Esta información personaliza tu experiencia en la app
-            </Text>
-            <View className="gap-4">
-              <View>
-                <Text className="text-tierra-700 text-sm font-semibold mb-2">Tu nombre</Text>
-                <TextInput
-                  className="bg-white border-2 border-verde-200 rounded-xl px-4 py-4 text-carbon text-base"
-                  placeholder="Ej: María García"
-                  placeholderTextColor="#a8a098"
-                  value={nombre}
-                  onChangeText={setNombre}
-                  autoFocus
-                />
-              </View>
-              <View>
-                <Text className="text-tierra-700 text-sm font-semibold mb-2">
-                  Municipio o comunidad
-                </Text>
-                <TextInput
-                  className="bg-white border-2 border-verde-200 rounded-xl px-4 py-4 text-carbon text-base"
-                  placeholder="Ej: Escárcega, Campeche"
-                  placeholderTextColor="#a8a098"
-                  value={municipio}
-                  onChangeText={setMunicipio}
-                />
-              </View>
-              <View className="bg-verde-100 rounded-xl p-4">
-                <Text className="text-verde-700 text-xs leading-5">
-                  💡 Estos datos solo se guardan en tu teléfono. No se comparten con nadie.
-                </Text>
-              </View>
+            <Text style={{ color: '#1A1A1A', fontSize: 23, fontWeight: '600', lineHeight: 30, fontFamily: 'Poppins_600SemiBold' }}>¿Cómo te llamas?</Text>
+            <Text style={{ color: '#4A4A4A', fontSize: 13.5, fontWeight: '300', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>Esta información personaliza tu experiencia en la app</Text>
+
+            <Text style={{ color: '#1A1A1A', fontSize: 13, fontWeight: '500', marginBottom: 6, fontFamily: 'Poppins_500Medium' }}>Tu nombre</Text>
+            <TextInput
+              value={nombre}
+              onChangeText={setNombre}
+              placeholder="Ej: María García"
+              placeholderTextColor="#9A917F"
+              autoFocus
+              style={{ backgroundColor: '#C1BAAE', borderRadius: 12, paddingHorizontal: 16, height: 50, borderWidth: 1, borderColor: '#B0A897', fontSize: 15, color: '#1A1A1A', marginBottom: 16, fontFamily: 'Poppins_400Regular' }}
+            />
+
+            <EstadoMunicipioSelect estado={estado} municipio={municipio} onEstado={setEstado} onMunicipio={setMunicipio} />
+
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10, backgroundColor: 'rgba(70,93,67,0.12)', borderWidth: 1, borderColor: 'rgba(70,93,67,0.2)', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, marginTop: 4 }}>
+              <ShieldCheck size={18} color="#465D43" strokeWidth={1.7} />
+              <Text style={{ color: '#3C4F3A', fontSize: 12.5, fontWeight: '300', flex: 1, lineHeight: 19 }}>
+                Estos datos solo se guardan en tu teléfono. No se comparten con nadie.
+              </Text>
             </View>
           </View>
         )}
@@ -123,110 +109,96 @@ export default function Diagnostico() {
         {/* PASO 2 — Herramientas */}
         {paso === 2 && (
           <View>
-            <Text className="text-carbon text-2xl font-bold mb-1" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-              ¿Qué herramientas tienes?
+            <Text style={{ color: '#1A1A1A', fontSize: 23, fontWeight: '600', lineHeight: 30, fontFamily: 'Poppins_600SemiBold' }}>¿Qué herramientas tienes?</Text>
+            <Text style={{ color: '#4A4A4A', fontSize: 13.5, fontWeight: '300', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>Selecciona todo lo que tienes disponible</Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+              {HERRAMIENTAS.map((h) => {
+                const on = herramientas.includes(h.id);
+                return (
+                  <Pressable key={h.id} onPress={() => toggleHerramienta(h.id)}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: on ? '#1F3D36' : '#C1BAAE', borderWidth: 1, borderColor: on ? '#1F3D36' : '#B0A897', borderRadius: 99, paddingHorizontal: 14, paddingVertical: 10 }}>
+                    <Text style={{ fontSize: 15 }}>{h.emoji}</Text>
+                    <Text style={{ color: on ? '#F4F1EA' : '#1A1A1A', fontSize: 13, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>{h.label}</Text>
+                    {on && <Text style={{ color: '#93B36F', fontSize: 12, fontWeight: '700' }}>✓</Text>}
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={{ color: '#4A4A4A', fontSize: 12, fontWeight: '300', marginTop: 16 }}>
+              {herramientas.length} seleccionada{herramientas.length !== 1 ? 's' : ''}
             </Text>
-            <Text className="text-tierra-600 text-sm mb-6">
-              Selecciona todo lo que tienes disponible
-            </Text>
-            {HERRAMIENTAS.map((h) => {
-              const activa = herramientas.includes(h.id);
-              return (
-                <Pressable
-                  key={h.id}
-                  onPress={() => toggleHerramienta(h.id)}
-                  className={`flex-row items-center p-4 rounded-xl mb-3 border-2 ${
-                    activa ? 'bg-verde-100 border-verde-600' : 'bg-white border-tierra-200'
-                  }`}
-                >
-                  <Text className="text-2xl mr-3">{h.emoji}</Text>
-                  <Text className={`text-base flex-1 ${activa ? 'text-verde-800 font-semibold' : 'text-tierra-700'}`}>
-                    {h.label}
-                  </Text>
-                  {activa && (
-                    <View className="w-5 h-5 rounded-full bg-verde-600 items-center justify-center">
-                      <Text className="text-white text-xs font-bold">✓</Text>
-                    </View>
-                  )}
-                </Pressable>
-              );
-            })}
           </View>
         )}
 
-        {/* PASO 3 — Nivel de experiencia */}
+        {/* PASO 3 — Nivel */}
         {paso === 3 && (
           <View>
-            <Text className="text-carbon text-2xl font-bold mb-1" style={{ fontFamily: 'Poppins_600SemiBold' }}>
-              ¿Cuál es tu experiencia?
-            </Text>
-            <Text className="text-tierra-600 text-sm mb-6">
-              Esto nos ayuda a recomendarte los procesos más adecuados
-            </Text>
-            {NIVELES.map((n) => {
-              const activo = nivelExperiencia === n.id;
-              return (
-                <Pressable
-                  key={n.id}
-                  onPress={() => setNivelExperiencia(n.id)}
-                  className={`p-5 rounded-xl mb-4 border-2 ${
-                    activo ? 'bg-verde-100 border-verde-600' : 'bg-white border-tierra-200'
-                  }`}
-                >
-                  <Text className="text-3xl mb-2">{n.emoji}</Text>
-                  <Text className={`text-lg font-bold mb-1 ${activo ? 'text-verde-800' : 'text-carbon'}`}>
-                    {n.label}
-                  </Text>
-                  <Text className={`text-sm ${activo ? 'text-verde-700' : 'text-tierra-600'}`}>
-                    {n.desc}
-                  </Text>
-                </Pressable>
-              );
-            })}
+            <Text style={{ color: '#1A1A1A', fontSize: 23, fontWeight: '600', lineHeight: 30, fontFamily: 'Poppins_600SemiBold' }}>¿Cuál es tu experiencia?</Text>
+            <Text style={{ color: '#4A4A4A', fontSize: 13.5, fontWeight: '300', marginTop: 6, marginBottom: 24, lineHeight: 20 }}>Esto nos ayuda a recomendarte los procesos más adecuados</Text>
+            <View style={{ gap: 12 }}>
+              {NIVELES.map((n) => {
+                const on = nivelExperiencia === n.id;
+                return (
+                  <Pressable key={n.id} onPress={() => setNivelExperiencia(n.id)}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: on ? '#1F3D36' : '#C1BAAE', borderWidth: 2, borderColor: on ? '#9E5A38' : '#B0A897', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 16 }}>
+                    <Text style={{ fontSize: 30 }}>{n.emoji}</Text>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ color: on ? '#F4F1EA' : '#1A1A1A', fontSize: 16, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>{n.label}</Text>
+                      <Text style={{ color: on ? '#A7C49A' : '#4A4A4A', fontSize: 12.5, fontWeight: '300', marginTop: 2 }}>{n.desc}</Text>
+                    </View>
+                    <View style={{ width: 24, height: 24, borderRadius: 12, borderWidth: 2, borderColor: on ? '#9E5A38' : '#9A917F', alignItems: 'center', justifyContent: 'center' }}>
+                      {on && <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: '#9E5A38' }} />}
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
           </View>
         )}
 
         {/* PASO 4 — Confirmación */}
         {paso === 4 && (
-          <View className="items-center pt-8">
-            <Text className="text-6xl mb-6">🎉</Text>
-            <Text className="text-carbon text-2xl font-bold text-center mb-3" style={{ fontFamily: 'Poppins_600SemiBold' }}>
+          <View style={{ alignItems: 'center', paddingTop: 8 }}>
+            <View style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: 'rgba(147,179,111,0.18)', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+              <Text style={{ fontSize: 44 }}>🎉</Text>
+            </View>
+            <Text style={{ color: '#1A1A1A', fontSize: 23, fontWeight: '600', textAlign: 'center', marginTop: 12, fontFamily: 'Poppins_600SemiBold' }}>
               ¡Todo listo{nombre ? `, ${nombre.split(' ')[0]}` : ''}!
             </Text>
-            <Text className="text-tierra-600 text-base text-center leading-6 mb-8 px-4">
+            <Text style={{ color: '#4A4A4A', fontSize: 13.5, fontWeight: '300', textAlign: 'center', marginTop: 8, paddingHorizontal: 12, lineHeight: 20 }}>
               Tu perfil está configurado. La app se adaptará a tus herramientas y nivel de experiencia.
             </Text>
-            <View className="bg-verde-100 rounded-2xl p-5 w-full gap-2">
-              <Text className="text-verde-800 font-semibold text-base mb-1">Tu perfil:</Text>
-              {nombre ? (
-                <Text className="text-tierra-700">👤 Nombre: <Text className="font-bold">{nombre}</Text></Text>
-              ) : null}
-              {municipio ? (
-                <Text className="text-tierra-700">📍 Comunidad: <Text className="font-bold">{municipio}</Text></Text>
-              ) : null}
-              <Text className="text-tierra-700">
-                🎯 Nivel: <Text className="font-bold capitalize">{nivelExperiencia}</Text>
-              </Text>
-              <Text className="text-tierra-700">
-                🔧 Herramientas: <Text className="font-bold">{herramientas.length} seleccionadas</Text>
-              </Text>
+            <View style={{ width: '100%', gap: 10, marginTop: 24 }}>
+              {[
+                ['👤', 'Nombre',       nombre || '—'],
+                ['📍', 'Estado',       estado || '—'],
+                ['📍', 'Municipio',    municipio || '—'],
+                ['🎯', 'Nivel',        NIVELES.find((n) => n.id === nivelExperiencia)?.label || '—'],
+                ['🔧', 'Herramientas', herramientas.length + ' seleccionadas'],
+              ].map(([ic, k, v]) => (
+                <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#C1BAAE', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14 }}>
+                  <Text style={{ fontSize: 16 }}>{ic}</Text>
+                  <Text style={{ color: '#4A4A4A', fontSize: 13, fontWeight: '300', flex: 1 }}>{k}</Text>
+                  <Text style={{ color: '#1A1A1A', fontSize: 13.5, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>{v}</Text>
+                </View>
+              ))}
             </View>
           </View>
         )}
 
-        <View className="h-32" />
+        <View style={{ height: 16 }} />
       </ScrollView>
 
-      {/* Botón fijo abajo */}
-      <View className="px-6 pb-8 bg-tierra-50">
+      {/* Botón */}
+      <View style={{ paddingHorizontal: 24, paddingBottom: 28, paddingTop: 12, backgroundColor: '#D0CAC0' }}>
         <Pressable
           onPress={avanzar}
-          className="bg-verde-800 rounded-2xl py-5 flex-row items-center justify-center active:opacity-80"
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: canNext ? '#9E5A38' : '#B9A99B', borderRadius: 16, paddingVertical: 16, shadowColor: '#9E5A38', shadowOpacity: canNext ? 0.7 : 0, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: canNext ? 8 : 0 }}
         >
-          <Text className="text-white text-lg font-bold mr-2">
-            {paso === PASOS_TOTAL ? 'Empezar a explorar' : 'Continuar'}
+          <Text style={{ color: '#F7F2EC', fontSize: 16, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>
+            {paso === PASOS ? 'Empezar a explorar' : 'Continuar'}
           </Text>
-          <ChevronRight size={20} stroke="white" />
+          <ArrowRight size={19} color="#F7F2EC" strokeWidth={2} />
         </Pressable>
       </View>
     </SafeAreaView>

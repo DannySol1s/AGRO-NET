@@ -1,71 +1,69 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { TrendingUp, Award, Calculator } from 'lucide-react-native';
+import { FlaskConical, BadgeCheck, TrendingUp } from 'lucide-react-native';
 
-const FEATURES = [
-  { icon: TrendingUp, label: 'Formulaciones Técnicas', desc: 'Procesos profesionales con parámetros de calidad' },
-  { icon: Award,      label: 'Normativas Oficiales',   desc: 'NOM, CODEX y certificaciones de calidad' },
-  { icon: Calculator, label: 'Análisis Económico',     desc: 'Costos, rendimientos y estrategias de comercialización' },
+const FEATS: [React.ComponentType<{ size: number; color: string; strokeWidth: number }>, string, string][] = [
+  [FlaskConical, 'Formulaciones Técnicas',    'Procesos profesionales con parámetros de calidad'],
+  [BadgeCheck,   'Normativas Oficiales',       'NOM, CODEX y certificaciones de calidad'],
+  [TrendingUp,   'Análisis Económico',         'Costos, rendimientos y estrategias de comercialización'],
 ];
 
 export default function Bienvenida() {
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 px-6 pt-8 items-center justify-center">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#1F3D36' }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 28, alignItems: 'center' }}
+        showsVerticalScrollIndicator={false}>
+
         {/* Logo */}
-        <View className="w-24 h-24 bg-gray-100 rounded-3xl items-center justify-center mb-2 border border-gray-200">
-          <Text className="text-4xl">🌱</Text>
+        <View style={{ width: 78, height: 78, borderRadius: 24, backgroundColor: 'rgba(147,179,111,0.12)', borderWidth: 1, borderColor: 'rgba(147,179,111,0.3)', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <Text style={{ fontSize: 40 }}>🌱</Text>
         </View>
 
-        {/* Título */}
-        <Text className="text-verde-700 text-4xl font-bold tracking-widest mt-4 mb-1">
+        <Text style={{ color: '#F4F1EA', fontSize: 32, fontWeight: '600', letterSpacing: 0.5, fontFamily: 'Poppins_600SemiBold' }}>
           AGRO-NET
         </Text>
-        <Text className="text-verde-500 text-xs font-semibold tracking-widest mb-4">
+        <Text style={{ color: '#A7C49A', fontSize: 12.5, fontWeight: '500', letterSpacing: 2.5, marginTop: 4, fontFamily: 'Poppins_500Medium' }}>
           CREA, CONSERVA Y EMPRENDE
         </Text>
-
-        <Text className="text-gray-800 text-lg font-semibold text-center mb-1">
+        <Text style={{ color: '#CBD8C2', fontSize: 13, fontWeight: '300', textAlign: 'center', marginTop: 12, paddingHorizontal: 12, lineHeight: 20 }}>
           Plataforma Profesional de Transformación Agroalimentaria
-        </Text>
-        <Text className="text-gray-400 text-sm text-center mb-8">
-          Tecnología al servicio del campo mexicano
         </Text>
 
         {/* Features */}
-        <View className="w-full bg-gray-50 rounded-2xl p-4 gap-4 mb-8 border border-gray-100">
-          {FEATURES.map(({ icon: Icon, label, desc }) => (
-            <View key={label} className="flex-row items-start gap-3">
-              <View className="w-8 h-8 bg-verde-100 rounded-lg items-center justify-center mt-0.5">
-                <Icon size={16} stroke="#166534" />
+        <View style={{ width: '100%', marginTop: 28, gap: 12 }}>
+          {FEATS.map(([Icon, title, desc]) => (
+            <View key={title} style={{ flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)', borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14 }}>
+              <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(147,179,111,0.16)', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Icon size={22} color="#A7C49A" strokeWidth={1.7} />
               </View>
-              <View className="flex-1">
-                <Text className="text-gray-800 font-semibold text-sm">{label}</Text>
-                <Text className="text-gray-500 text-xs mt-0.5">{desc}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: '#F4F1EA', fontSize: 14.5, fontWeight: '500', fontFamily: 'Poppins_500Medium' }}>{title}</Text>
+                <Text style={{ color: '#9FB596', fontSize: 12, fontWeight: '300', lineHeight: 17, marginTop: 2 }}>{desc}</Text>
               </View>
             </View>
           ))}
         </View>
-      </View>
 
-      {/* CTA */}
-      <View className="px-6 pb-8">
+        {/* CTA */}
         <Pressable
           onPress={() => router.replace('/diagnostico')}
-          className="bg-verde-700 rounded-2xl py-4 items-center active:opacity-80"
+          style={{ width: '100%', marginTop: 28, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#9E5A38', borderRadius: 16, paddingVertical: 16, shadowColor: '#9E5A38', shadowOpacity: 0.7, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 8 }}
         >
-          <Text className="text-white text-base font-bold">Iniciar Plataforma ✨</Text>
+          <Text style={{ color: '#F7F2EC', fontSize: 16, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>
+            Iniciar Plataforma ✨
+          </Text>
         </Pressable>
 
-        <View className="flex-row items-center justify-center gap-2 mt-4">
-          <View className="w-2 h-2 rounded-full bg-verde-500" />
-          <Text className="text-gray-500 text-xs">Funciona sin conexión</Text>
+        {/* Footer */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 20 }}>
+          <View style={{ width: 7, height: 7, borderRadius: 3.5, backgroundColor: '#93B36F' }} />
+          <Text style={{ color: '#9FB596', fontSize: 12, fontWeight: '300' }}>Funciona sin conexión</Text>
         </View>
-        <Text className="text-gray-400 text-xs text-center mt-1">
+        <Text style={{ color: '#6E8266', fontSize: 11, fontWeight: '300', marginTop: 8, textAlign: 'center' }}>
           Desarrollado para productores rurales mexicanos
         </Text>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
