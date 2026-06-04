@@ -116,7 +116,7 @@ export default function Costos() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-tierra-50" edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
       {/* Header */}
       <View className="bg-verde-800 px-6 pt-4 pb-5">
         <Pressable onPress={() => router.back()} className="mb-3 self-start">

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react-native';
 import { useUsuarioStore, type HerramientaDisponible, type NivelExperiencia } from '@/store/usuario';
@@ -38,6 +38,7 @@ const NIVELES: { id: NivelExperiencia; emoji: string; label: string; desc: strin
 const PASOS = 4;
 
 export default function Diagnostico() {
+  const insets = useSafeAreaInsets();
   const [paso, setPaso] = useState(1);
   const { nombre, setNombre, estado, setEstado, municipio, setMunicipio,
           herramientas, toggleHerramienta, nivelExperiencia, setNivelExperiencia,
@@ -190,7 +191,7 @@ export default function Diagnostico() {
       </ScrollView>
 
       {/* Botón */}
-      <View style={{ paddingHorizontal: 24, paddingBottom: 28, paddingTop: 12, backgroundColor: '#D0CAC0' }}>
+      <View style={{ paddingHorizontal: 24, paddingBottom: Math.max(insets.bottom + 16, 32), paddingTop: 12, backgroundColor: '#D0CAC0' }}>
         <Pressable
           onPress={avanzar}
           style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: canNext ? '#9E5A38' : '#B9A99B', borderRadius: 16, paddingVertical: 16, shadowColor: '#9E5A38', shadowOpacity: canNext ? 0.7 : 0, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: canNext ? 8 : 0 }}
