@@ -112,14 +112,9 @@ export default function Costos() {
             <Calculator size={24} color="#c27a5a" strokeWidth={1.6} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Calculadora</Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Costos, precios y rentabilidad</Text>
+            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Calculadora de Costos</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Costos, rendimientos y rentabilidad</Text>
           </View>
-          {historial.length > 0 && (
-            <View style={{ backgroundColor: 'rgba(194,122,90,0.2)', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 4 }}>
-              <Text style={{ color: '#c27a5a', fontSize: 11, fontWeight: '600' }}>{historial.length} guardados</Text>
-            </View>
-          )}
         </View>
       </View>
 

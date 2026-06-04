@@ -67,16 +67,10 @@ export default function Productos() {
             <FlaskConical size={24} color="#93B36F" strokeWidth={1.6} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Productos</Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Formulaciones agroindustriales</Text>
+            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Formulaciones</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Procesos agroindustriales</Text>
           </View>
         </View>
-        {!cargando && todos.length > 0 && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingLeft: 50 }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#93B36F' }} />
-            <Text style={{ color: '#A7C49A', fontSize: 11, fontWeight: '300' }}>{todos.length} formulaciones disponibles</Text>
-          </View>
-        )}
       </View>
 
       {/* Buscador */}

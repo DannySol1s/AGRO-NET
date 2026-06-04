@@ -62,12 +62,8 @@ export default function Perfil() {
             <CircleUser size={26} color="#93B36F" strokeWidth={1.5} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>
-              {nombre ? nombre.split(' ')[0] : 'Mi Perfil'}
-            </Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>
-              {herramientas.length > 0 ? `${herramientas.length} herramientas · ${nivelExperiencia}` : 'Configura tu perfil'}
-            </Text>
+            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Mi Perfil</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Recursos técnicos y nivel de producción</Text>
           </View>
         </View>
       </View>

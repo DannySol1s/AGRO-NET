@@ -50,15 +50,9 @@ export default function MateriasIndex() {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Materias Primas</Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Frutas, tubérculos, hierbas y semillas</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Información nutricional y propiedades funcionales</Text>
           </View>
         </View>
-        {materias.length > 0 && (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingLeft: 50 }}>
-            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#93B36F' }} />
-            <Text style={{ color: '#A7C49A', fontSize: 11, fontWeight: '300' }}>{materias.length} materias disponibles</Text>
-          </View>
-        )}
       </View>
 
       {cargando ? (
