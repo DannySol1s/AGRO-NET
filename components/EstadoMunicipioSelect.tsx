@@ -56,6 +56,7 @@ function PickerModal({ visible, title, items, selected, onSelect, onClose }: Pic
           <FlatList
             data={filtered}
             keyExtractor={(item) => item}
+            keyboardShouldPersistTaps="handled"
             contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
             renderItem={({ item }) => (
               <Pressable
