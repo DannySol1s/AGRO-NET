@@ -7,7 +7,7 @@ import {
 import { router } from "expo-router";
 import { ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, KeyboardAvoidingView, Platform } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -169,6 +169,11 @@ export default function Diagnostico() {
         </View>
       </View>
 
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}
+      >
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 24, paddingBottom: 20 }}
@@ -587,6 +592,7 @@ export default function Diagnostico() {
           <ArrowRight size={19} color="#F7F2EC" strokeWidth={2} />
         </Pressable>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
