@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View, Text, ScrollView, Pressable, TextInput,
-  Modal, FlatList, Animated,
+  Modal, FlatList, Animated, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -179,15 +179,39 @@ export default function ProductoDetalle() {
     if (speaking) {
       await Speech.stop();
       setLeyendo(false);
-    } else {
-      setLeyendo(true);
-      Speech.speak(buildTextoTTS(), {
-        language: 'es-MX',
-        rate: 0.85,
-        onDone: () => setLeyendo(false),
-        onError: () => setLeyendo(false),
-      });
+      return;
     }
+
+    const texto = buildTextoTTS();
+    if (!texto) return;
+
+    setLeyendo(true);
+
+    // Detecta la mejor voz española disponible en el dispositivo
+    let lang = 'es';
+    try {
+      const voices = await Speech.getAvailableVoicesAsync();
+      const preferencia = ['es-MX', 'es-US', 'es-419', 'es-ES', 'es'];
+      for (const pref of preferencia) {
+        if (voices.some((v) => v.language?.startsWith(pref))) {
+          lang = pref;
+          break;
+        }
+      }
+    } catch { /* usa 'es' por defecto */ }
+
+    Speech.speak(texto, {
+      language: lang,
+      rate: 0.85,
+      onDone:  () => setLeyendo(false),
+      onError: () => {
+        setLeyendo(false);
+        Alert.alert(
+          'Audio no disponible',
+          'Este dispositivo no tiene instalado el motor de voz en español. Ve a Ajustes → Idioma y texto → Síntesis de voz para instalarlo.'
+        );
+      },
+    });
   }
 
   if (!producto) {
