@@ -144,15 +144,15 @@ export default function Costos() {
             <View key={campo} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#C1BAAE', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 10 }}>
               <Icon size={18} color="#465D43" strokeWidth={1.8} />
               <Text style={{ color: '#1A1A1A', fontSize: 13.5, fontWeight: '500', flex: 1, fontFamily: 'Poppins_500Medium' }}>{label}</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#D8D2C8', borderRadius: 12, borderWidth: 1, borderColor: campos[campo] ? '#465D43' : '#B0A897', height: 40, minWidth: 100 }}>
-                <Text style={{ color: '#4A4A4A', fontSize: 14, fontWeight: '500', paddingLeft: 12 }}>$</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#D8D2C8', borderRadius: 12, borderWidth: 1, borderColor: campos[campo] ? '#465D43' : '#B0A897', height: 44, paddingHorizontal: 12, minWidth: 110 }}>
+                <Text style={{ color: '#4A4A4A', fontSize: 14, fontWeight: '500', marginRight: 4 }}>$</Text>
                 <TextInput
                   value={campos[campo]}
                   onChangeText={set(campo)}
                   keyboardType="decimal-pad"
                   placeholder="0.00"
                   placeholderTextColor="#9A917F"
-                  style={{ minWidth: 70, paddingHorizontal: 8, fontSize: 15, fontWeight: '600', color: '#1A1A1A', textAlign: 'center', fontFamily: 'Poppins_600SemiBold' }}
+                  style={{ flex: 1, height: 44, padding: 0, margin: 0, fontSize: 15, fontWeight: '600', color: '#1A1A1A', textAlign: 'right', textAlignVertical: 'center', includeFontPadding: false, fontFamily: 'Poppins_600SemiBold' } as any}
                 />
               </View>
             </View>
