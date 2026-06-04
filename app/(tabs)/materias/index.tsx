@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, ChevronRight, Sprout } from 'lucide-react-native';
+import { ArrowLeft, ChevronRight, Leaf } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { materiasPrimas } from '@/db/schema';
 import { useSeleccionStore } from '@/store/seleccion';
@@ -40,19 +40,25 @@ export default function MateriasIndex() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
       {/* Header */}
-      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16 }}>
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 20 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Pressable onPress={() => router.back()} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
             <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
           </Pressable>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: '#F4F1EA', fontSize: 18, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Materias Primas</Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Información nutricional y propiedades funcionales</Text>
+          <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(147,179,111,0.18)', borderWidth: 1, borderColor: 'rgba(147,179,111,0.25)', alignItems: 'center', justifyContent: 'center' }}>
+            <Leaf size={24} color="#93B36F" strokeWidth={1.6} />
           </View>
-          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(147,179,111,0.16)', alignItems: 'center', justifyContent: 'center' }}>
-            <Sprout size={21} color="#93B36F" strokeWidth={1.7} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Materias Primas</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Frutas, tubérculos, hierbas y semillas</Text>
           </View>
         </View>
+        {materias.length > 0 && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingLeft: 50 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#93B36F' }} />
+            <Text style={{ color: '#A7C49A', fontSize: 11, fontWeight: '300' }}>{materias.length} materias disponibles</Text>
+          </View>
+        )}
       </View>
 
       {cargando ? (

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, Pressable, Share, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, Trash2, ChevronDown, ChevronUp, RotateCcw, Sprout, Package, HandCoins, Flame, Truck, TrendingDown, Ellipsis, Receipt, Save, Share2, History, CheckCircle2 } from 'lucide-react-native';
+import { ArrowLeft, Trash2, ChevronDown, ChevronUp, RotateCcw, Sprout, Package, HandCoins, Flame, Truck, TrendingDown, Ellipsis, Receipt, Save, Share2, History, CheckCircle2, Calculator } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { calculos } from '@/db/schema';
 import { desc, eq } from 'drizzle-orm';
@@ -103,16 +103,23 @@ export default function Costos() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
 
       {/* Header */}
-      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16 }}>
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 20 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Pressable onPress={() => router.back()} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
             <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
           </Pressable>
-          <Text style={{ fontSize: 22, lineHeight: 26 }}>💰</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={{ color: '#F4F1EA', fontSize: 18, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Calculadora de Costos</Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300' }}>Precio justo para tu producto</Text>
+          <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(158,90,56,0.25)', borderWidth: 1, borderColor: 'rgba(194,122,90,0.35)', alignItems: 'center', justifyContent: 'center' }}>
+            <Calculator size={24} color="#c27a5a" strokeWidth={1.6} />
           </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Calculadora</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Costos, precios y rentabilidad</Text>
+          </View>
+          {historial.length > 0 && (
+            <View style={{ backgroundColor: 'rgba(194,122,90,0.2)', borderRadius: 99, paddingHorizontal: 10, paddingVertical: 4 }}>
+              <Text style={{ color: '#c27a5a', fontSize: 11, fontWeight: '600' }}>{historial.length} guardados</Text>
+            </View>
+          )}
         </View>
       </View>
 

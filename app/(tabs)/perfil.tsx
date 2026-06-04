@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ScrollView, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, Wrench, Target, RotateCcw, Moon } from 'lucide-react-native';
+import { ArrowLeft, Wrench, Target, RotateCcw, Moon, CircleUser } from 'lucide-react-native';
 import { useUsuarioStore, type HerramientaDisponible, type NivelExperiencia } from '@/store/usuario';
 import { EstadoMunicipioSelect } from '@/components/EstadoMunicipioSelect';
 import { useState } from 'react';
@@ -53,15 +53,21 @@ export default function Perfil() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
       {/* Header */}
-      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16 }}>
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 20 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Pressable onPress={() => router.back()} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
             <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
           </Pressable>
-          <Text style={{ fontSize: 22 }}>👤</Text>
+          <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(147,179,111,0.18)', borderWidth: 1, borderColor: 'rgba(147,179,111,0.25)', alignItems: 'center', justifyContent: 'center' }}>
+            <CircleUser size={26} color="#93B36F" strokeWidth={1.5} />
+          </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: '#F4F1EA', fontSize: 18, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Mi Perfil</Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300' }}>Recursos técnicos y nivel de producción</Text>
+            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>
+              {nombre ? nombre.split(' ')[0] : 'Mi Perfil'}
+            </Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>
+              {herramientas.length > 0 ? `${herramientas.length} herramientas · ${nivelExperiencia}` : 'Configura tu perfil'}
+            </Text>
           </View>
         </View>
       </View>

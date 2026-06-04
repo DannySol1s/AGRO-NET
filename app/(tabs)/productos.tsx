@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { View, Text, FlatList, Pressable, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { Search, ArrowLeft, ChevronRight, Gauge, Archive, X } from 'lucide-react-native';
+import { Search, ArrowLeft, ChevronRight, Gauge, Archive, X, FlaskConical } from 'lucide-react-native';
 import { db } from '@/db/client';
 import { productos, materiasPrimas } from '@/db/schema';
 import { useUsuarioStore, type NivelExperiencia } from '@/store/usuario';
@@ -58,19 +58,25 @@ export default function Productos() {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#D0CAC0' }} edges={['top']}>
 
       {/* Header */}
-      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 16 }}>
+      <View style={{ backgroundColor: '#1F3D36', paddingHorizontal: 16, paddingTop: 4, paddingBottom: 20 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Pressable onPress={() => router.back()} style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.08)', alignItems: 'center', justifyContent: 'center' }}>
             <ArrowLeft size={21} color="#F4F1EA" strokeWidth={1.9} />
           </Pressable>
-          <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: 'rgba(147,179,111,0.16)', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 22 }}>⚗️</Text>
+          <View style={{ width: 46, height: 46, borderRadius: 14, backgroundColor: 'rgba(147,179,111,0.18)', borderWidth: 1, borderColor: 'rgba(147,179,111,0.25)', alignItems: 'center', justifyContent: 'center' }}>
+            <FlaskConical size={24} color="#93B36F" strokeWidth={1.6} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: '#F4F1EA', fontSize: 18, fontWeight: '600', fontFamily: 'Poppins_600SemiBold' }}>Formulaciones</Text>
-            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300' }}>Procesos agroindustriales</Text>
+            <Text style={{ color: '#F4F1EA', fontSize: 20, fontWeight: '600', fontFamily: 'Poppins_600SemiBold', lineHeight: 26 }}>Productos</Text>
+            <Text style={{ color: '#A7C49A', fontSize: 12, fontWeight: '300', marginTop: 1 }}>Formulaciones agroindustriales</Text>
           </View>
         </View>
+        {!cargando && todos.length > 0 && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingLeft: 50 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#93B36F' }} />
+            <Text style={{ color: '#A7C49A', fontSize: 11, fontWeight: '300' }}>{todos.length} formulaciones disponibles</Text>
+          </View>
+        )}
       </View>
 
       {/* Buscador */}
