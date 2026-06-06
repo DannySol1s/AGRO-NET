@@ -206,48 +206,6 @@ npx expo start
 
 ---
 
-## Diseño Responsivo
-
-| Rango | Dispositivo objetivo | Comportamiento |
-|---|---|---|
-| < 360 dp | Teléfonos compactos (Android) | Layout de una columna, tipografía reducida al mínimo |
-| 360–414 dp | Teléfonos estándar (iPhone SE → Galaxy S) | Layout principal, grid 2×2 en Home |
-| 414–768 dp | Teléfonos grandes / phablets | Grid con mayor padding, tarjetas más anchas |
-| > 768 dp | Tablets (iPad, Android tablet) | Soporte habilitado en `app.json` (`supportsTablet: true`) |
-
-El diseño usa `SafeAreaView` con detección de insets para compatibilidad con notch, dynamic island y gestos del sistema Android.
-
----
-
-## Sistema de Diseño
-
-```js
-// Paleta de colores — tailwind.config.js
-colors: {
-  verde: {
-    800: '#1F3D36',  // Verde bosque — header, íconos, fondos oscuros
-    400: '#5c8858',  // Verde medio — estados interactivos
-  },
-  tierra: {
-    400: '#C1BAAE',  // Tierra claro — tarjetas, inputs, fondos de sección
-  },
-  cosecha: {
-    500: '#9E5A38',  // Terracota — CTAs, badges, acentos cálidos
-  },
-  fondo:   '#D0CAC0', // Fondo general de pantallas
-  carbon:  '#1A1A1A', // Texto principal
-}
-
-// Tipografía
-Poppins_400Regular  // Texto de cuerpo, labels secundarios
-Poppins_500Medium   // Labels intermedios, nombres de producto
-Poppins_600SemiBold // Títulos, encabezados, valores numéricos
-```
-
-Los tokens de color garantizan contraste WCAG AA entre combinaciones críticas: texto `carbon` sobre `tierra.400`, texto `#F4F1EA` sobre `verde.800`.
-
----
-
 ## Valor Formativo
 
 > *"El mayor reto no fue escribir el código — fue diseñar una experiencia que funcione sin conexión para alguien que jamás ha usado una app de productividad."*
