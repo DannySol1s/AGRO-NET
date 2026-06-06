@@ -66,19 +66,16 @@ La motivación central del proyecto es la brecha entre el potencial productivo d
 
 ### Stack Tecnológico
 
-```
-Framework móvil ─── Expo SDK 54 + React Native 0.81.5
-Routing ─────────── Expo Router 6 (file-based, tipado)
-Lenguaje ────────── TypeScript 5.8 (strict: true)
-Base de datos ───── expo-sqlite + Drizzle ORM 0.45
-Estado global ───── Zustand 5
-Estilos ─────────── NativeWind 4 (TailwindCSS para RN)
-Animaciones ─────── React Native Reanimated 4
-Iconos ──────────── Lucide React Native
-Tipografía ──────── Poppins (400, 500, 600) via @expo-google-fonts
-Voz ─────────────── expo-speech
-Persistencia extra ─ @react-native-async-storage/async-storage
-```
+| Tecnología | Por qué se eligió |
+|---|---|
+| **Expo SDK 54 + React Native 0.81.5** | Permite compilar para Android e iOS desde una sola base de código con acceso a APIs nativas sin ejectar. |
+| **Expo Router 6** | Navegación file-based con rutas tipadas (`typedRoutes: true`), elimina la configuración manual de stacks y tabs. |
+| **TypeScript 5.8 `strict: true`** | Tipado estricto en todo el proyecto para detectar errores en compilación antes de que lleguen al productor. |
+| **expo-sqlite + Drizzle ORM** | Persistencia local completamente offline. Drizzle aporta queries tipadas, migraciones declarativas y relaciones con FK sin depender de red. |
+| **Zustand 5** | Estado global mínimo sin el boilerplate de Redux. Ideal para un store de perfil de usuario con persistencia en AsyncStorage. |
+| **NativeWind 4** | TailwindCSS en React Native. Permite estilos consistentes y rápidos, con fallback a `StyleSheet` para casos dinámicos o de performance. |
+| **React Native Reanimated 4** | Animaciones que corren en el hilo UI con worklets, independientes del JS thread para no bloquear la interacción. |
+| **expo-speech** | TTS nativo sin dependencias externas, con manejo de diferencias de comportamiento entre Android e iOS. |
 
 ### Estructura de Archivos
 
